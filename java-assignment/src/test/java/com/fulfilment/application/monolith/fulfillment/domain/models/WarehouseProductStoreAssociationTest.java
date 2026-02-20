@@ -8,55 +8,67 @@ import org.junit.jupiter.api.Test;
 public class WarehouseProductStoreAssociationTest {
 
   @Test
-  void testAssociationCanBeCreated() {
-    // Given
+  void testAssociationDefaultFields() {
+    // Given & When
     WarehouseProductStoreAssociation association = new WarehouseProductStoreAssociation();
-    association.warehouseBusinessUnitCode = "WH-001";
-    association.productId = 1L;
-    association.storeId = 1L;
-    association.createdAt = LocalDateTime.now();
 
     // Then
     assertNotNull(association);
-    assertEquals("WH-001", association.warehouseBusinessUnitCode);
-    assertEquals(1L, association.productId);
-    assertEquals(1L, association.storeId);
-    assertNotNull(association.createdAt);
+    assertNull(association.id);
+    assertNull(association.warehouseBusinessUnitCode);
+    assertNull(association.productId);
+    assertNull(association.storeId);
+    assertNull(association.createdAt);
   }
 
   @Test
-  void testAssociationWithMultipleProducts() {
+  void testAssociationFieldsSet() {
+    // Given
+    WarehouseProductStoreAssociation association = new WarehouseProductStoreAssociation();
+    association.id = 1L;
+    association.warehouseBusinessUnitCode = "WH-001";
+    association.productId = 10L;
+    association.storeId = 5L;
+    LocalDateTime now = LocalDateTime.now();
+    association.createdAt = now;
+
+    // When & Then
+    assertEquals(1L, association.id);
+    assertEquals("WH-001", association.warehouseBusinessUnitCode);
+    assertEquals(10L, association.productId);
+    assertEquals(5L, association.storeId);
+    assertEquals(now, association.createdAt);
+  }
+
+  @Test
+  void testAssociationMultipleInstances() {
     // Given
     WarehouseProductStoreAssociation assoc1 = new WarehouseProductStoreAssociation();
+    assoc1.id = 1L;
     assoc1.warehouseBusinessUnitCode = "WH-001";
     assoc1.productId = 1L;
     assoc1.storeId = 1L;
 
     WarehouseProductStoreAssociation assoc2 = new WarehouseProductStoreAssociation();
-    assoc2.warehouseBusinessUnitCode = "WH-001";
+    assoc2.id = 2L;
+    assoc2.warehouseBusinessUnitCode = "WH-002";
     assoc2.productId = 2L;
-    assoc2.storeId = 1L;
+    assoc2.storeId = 2L;
 
-    // Then
-    assertNotNull(assoc1);
-    assertNotNull(assoc2);
-    assertEquals(assoc1.warehouseBusinessUnitCode, assoc2.warehouseBusinessUnitCode);
-    assertNotEquals(assoc1.productId, assoc2.productId);
+    // When & Then
+    assertNotEquals(assoc1.id, assoc2.id);
+    assertNotEquals(assoc1.warehouseBusinessUnitCode, assoc2.warehouseBusinessUnitCode);
   }
 
   @Test
-  void testAssociationEquality() {
+  void testAssociationWithCreatedAt() {
     // Given
     WarehouseProductStoreAssociation association = new WarehouseProductStoreAssociation();
-    association.warehouseBusinessUnitCode = "WH-002";
-    association.productId = 5L;
-    association.storeId = 2L;
+    LocalDateTime createdDate = LocalDateTime.now();
+    association.createdAt = createdDate;
 
-    // Then
-    assertNotNull(association);
-    assertEquals("WH-002", association.warehouseBusinessUnitCode);
-    assertEquals(5L, association.productId);
-    assertEquals(2L, association.storeId);
+    // When & Then
+    assertNotNull(association.createdAt);
+    assertEquals(createdDate, association.createdAt);
   }
 }
-

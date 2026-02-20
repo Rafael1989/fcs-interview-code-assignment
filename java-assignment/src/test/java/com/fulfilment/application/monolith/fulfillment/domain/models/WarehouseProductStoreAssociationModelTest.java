@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 
-public class WarehouseProductStoreAssociationTest {
+public class WarehouseProductStoreAssociationModelTest {
 
   @Test
   void testAssociationDefaultFields() {
@@ -72,3 +72,4 @@ public class WarehouseProductStoreAssociationTest {
     assertEquals(createdDate, association.createdAt);
   }
 }
+
