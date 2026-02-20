@@ -52,7 +52,12 @@ public class StoreResource {
     if (store.id != null) {
       throw new WebApplicationException("Id was invalidly set on request.", 422);
     }
-
+    if (store.name == null) {
+      throw new WebApplicationException("Store Name was not set on request.", 422);
+    }
+    if (store.quantityProductsInStock < 0) {
+      throw new WebApplicationException("Stock cannot be negative.", 422);
+    }
     store.persist();
 
     legacyStoreManagerGateway.createStoreOnLegacySystem(store);
@@ -75,7 +80,9 @@ public class StoreResource {
     }
 
     entity.name = updatedStore.name;
-    entity.quantityProductsInStock = updatedStore.quantityProductsInStock;
+    if (updatedStore.quantityProductsInStock != 0) {
+      entity.quantityProductsInStock = updatedStore.quantityProductsInStock;
+    }
     entity.persist();
 
     legacyStoreManagerGateway.updateStoreOnLegacySystem(updatedStore);
@@ -101,7 +108,7 @@ public class StoreResource {
       entity.name = updatedStore.name;
     }
 
-    if (entity.quantityProductsInStock != 0) {
+    if (updatedStore.quantityProductsInStock != 0) {
       entity.quantityProductsInStock = updatedStore.quantityProductsInStock;
     }
 
