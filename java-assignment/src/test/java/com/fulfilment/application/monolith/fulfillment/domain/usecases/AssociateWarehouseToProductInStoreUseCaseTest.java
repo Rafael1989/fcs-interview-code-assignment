@@ -49,26 +49,28 @@ public class AssociateWarehouseToProductInStoreUseCaseTest {
     Store store = new Store();
     store.id = 1L;
 
-    when(warehouseRepository.findByBusinessUnitCode("MWH.001")).thenReturn(warehouse);
-    when(productRepository.findById(1L)).thenReturn(product);
-    when(associationRepository.countWarehousesForProductStore(1L, 1L)).thenReturn(0);
-    when(associationRepository.countWarehousesForStore(1L)).thenReturn(1);
-    when(associationRepository.findByStore(1L)).thenReturn(new ArrayList<>());
-    when(associationRepository.countProductsForWarehouse("MWH.001")).thenReturn(2);
-    when(associationRepository.findByWarehouse("MWH.001")).thenReturn(new ArrayList<>());
-
-    WarehouseProductStoreAssociation created = new WarehouseProductStoreAssociation();
-    created.id = 1L;
-    created.warehouseBusinessUnitCode = "MWH.001";
-    created.productId = 1L;
-    created.storeId = 1L;
-
-    when(associationRepository.create(any())).thenReturn(created);
-
-    // When
-    try (MockedStatic<Store> storeMock = mockStatic(Store.class)) {
+    try (var storeMock = mockStatic(Store.class)) {
+      // Setup static mock first
       storeMock.when(() -> Store.findById(1L)).thenReturn(store);
       
+      // Then setup regular mocks
+      when(warehouseRepository.findByBusinessUnitCode("MWH.001")).thenReturn(warehouse);
+      when(productRepository.findById(1L)).thenReturn(product);
+      when(associationRepository.countWarehousesForProductStore(1L, 1L)).thenReturn(0);
+      when(associationRepository.countWarehousesForStore(1L)).thenReturn(1);
+      when(associationRepository.findByStore(1L)).thenReturn(new ArrayList<>());
+      when(associationRepository.countProductsForWarehouse("MWH.001")).thenReturn(2);
+      when(associationRepository.findByWarehouse("MWH.001")).thenReturn(new ArrayList<>());
+
+      WarehouseProductStoreAssociation created = new WarehouseProductStoreAssociation();
+      created.id = 1L;
+      created.warehouseBusinessUnitCode = "MWH.001";
+      created.productId = 1L;
+      created.storeId = 1L;
+
+      when(associationRepository.create(any())).thenReturn(created);
+
+      // When
       WarehouseProductStoreAssociation result = useCase.associate("MWH.001", 1L, 1L);
 
       // Then
@@ -119,19 +121,18 @@ public class AssociateWarehouseToProductInStoreUseCaseTest {
     Store store = new Store();
     store.id = 1L;
 
-    // Already has 5 products
-    when(warehouseRepository.findByBusinessUnitCode("MWH.001")).thenReturn(warehouse);
-    when(productRepository.findById(1L)).thenReturn(product);
-    when(associationRepository.countWarehousesForProductStore(1L, 1L)).thenReturn(0);
-    when(associationRepository.countWarehousesForStore(1L)).thenReturn(2);
-    when(associationRepository.findByStore(1L)).thenReturn(new ArrayList<>());
-    when(associationRepository.countProductsForWarehouse("MWH.001")).thenReturn(5);
-    when(associationRepository.findByWarehouse("MWH.001")).thenReturn(new ArrayList<>());
-
-    // When & Then
     try (var storeMock = mockStatic(Store.class)) {
       storeMock.when(() -> Store.findById(1L)).thenReturn(store);
       
+      // Already has 5 products
+      when(warehouseRepository.findByBusinessUnitCode("MWH.001")).thenReturn(warehouse);
+      when(productRepository.findById(1L)).thenReturn(product);
+      when(associationRepository.countWarehousesForProductStore(1L, 1L)).thenReturn(0);
+      when(associationRepository.countWarehousesForStore(1L)).thenReturn(2);
+      when(associationRepository.findByStore(1L)).thenReturn(new ArrayList<>());
+      when(associationRepository.countProductsForWarehouse("MWH.001")).thenReturn(5);
+      when(associationRepository.findByWarehouse("MWH.001")).thenReturn(new ArrayList<>());
+
       assertThrows(
           WebApplicationException.class,
           () -> useCase.associate("MWH.001", 1L, 1L),
@@ -151,15 +152,16 @@ public class AssociateWarehouseToProductInStoreUseCaseTest {
     Store store = new Store();
     store.id = 1L;
 
-    // Already has 2 warehouses for this product/store
-    when(warehouseRepository.findByBusinessUnitCode("MWH.001")).thenReturn(warehouse);
-    when(productRepository.findById(1L)).thenReturn(product);
-    when(associationRepository.countWarehousesForProductStore(1L, 1L)).thenReturn(2);
-
-    // When & Then
     try (var storeMock = mockStatic(Store.class)) {
+      // Open mockStatic FIRST, before any when() calls
       storeMock.when(() -> Store.findById(1L)).thenReturn(store);
       
+      // Already has 2 warehouses for this product/store
+      when(warehouseRepository.findByBusinessUnitCode("MWH.001")).thenReturn(warehouse);
+      when(productRepository.findById(1L)).thenReturn(product);
+      when(associationRepository.countWarehousesForProductStore(1L, 1L)).thenReturn(2);
+
+      // When & Then
       assertThrows(
           WebApplicationException.class,
           () -> useCase.associate("MWH.001", 1L, 1L),
