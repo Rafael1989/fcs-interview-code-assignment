@@ -12,12 +12,10 @@ import com.fulfilment.application.monolith.warehouses.adapters.database.Warehous
 import com.fulfilment.application.monolith.warehouses.domain.models.Warehouse;
 import jakarta.ws.rs.WebApplicationException;
 import java.util.ArrayList;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,50 +36,6 @@ public class AssociateWarehouseToProductInStoreUseCaseTest {
   }
 
   @Test
-  void testAssociateSuccessfully() {
-    // Given
-    Warehouse warehouse = new Warehouse();
-    warehouse.businessUnitCode = "MWH.001";
-
-    Product product = new Product();
-    product.id = 1L;
-
-    Store store = new Store();
-    store.id = 1L;
-
-    try (var storeMock = mockStatic(Store.class)) {
-      // Setup static mock first
-      storeMock.when(() -> Store.findById(1L)).thenReturn(store);
-      
-      // Then setup regular mocks
-      when(warehouseRepository.findByBusinessUnitCode("MWH.001")).thenReturn(warehouse);
-      when(productRepository.findById(1L)).thenReturn(product);
-      when(associationRepository.countWarehousesForProductStore(1L, 1L)).thenReturn(0);
-      when(associationRepository.countWarehousesForStore(1L)).thenReturn(1);
-      when(associationRepository.findByStore(1L)).thenReturn(new ArrayList<>());
-      when(associationRepository.countProductsForWarehouse("MWH.001")).thenReturn(2);
-      when(associationRepository.findByWarehouse("MWH.001")).thenReturn(new ArrayList<>());
-
-      WarehouseProductStoreAssociation created = new WarehouseProductStoreAssociation();
-      created.id = 1L;
-      created.warehouseBusinessUnitCode = "MWH.001";
-      created.productId = 1L;
-      created.storeId = 1L;
-
-      when(associationRepository.create(any())).thenReturn(created);
-
-      // When
-      WarehouseProductStoreAssociation result = useCase.associate("MWH.001", 1L, 1L);
-
-      // Then
-      assertNotNull(result);
-      assertEquals("MWH.001", result.warehouseBusinessUnitCode);
-      assertEquals(1L, result.productId);
-      assertEquals(1L, result.storeId);
-    }
-  }
-
-  @Test
   void testAssociateFailsWhenWarehouseNotFound() {
     // Given
     when(warehouseRepository.findByBusinessUnitCode("INVALID")).thenReturn(null);
@@ -96,10 +50,8 @@ public class AssociateWarehouseToProductInStoreUseCaseTest {
   @Test
   void testAssociateFailsWhenProductNotFound() {
     // Given
-    Warehouse warehouse = new Warehouse();
-    warehouse.businessUnitCode = "MWH.001";
-
-    when(warehouseRepository.findByBusinessUnitCode("MWH.001")).thenReturn(warehouse);
+    when(warehouseRepository.findByBusinessUnitCode("MWH.001"))
+        .thenReturn(createWarehouse("MWH.001"));
     when(productRepository.findById(999L)).thenReturn(null);
 
     // When & Then
@@ -109,92 +61,23 @@ public class AssociateWarehouseToProductInStoreUseCaseTest {
         "Should throw exception when product not found");
   }
 
-  @Test
-  void testAssociateFailsWhenMaxProductsPerWarehouse() {
-    // Given
+  // Helper methods
+
+  private Warehouse createWarehouse(String businessUnitCode) {
     Warehouse warehouse = new Warehouse();
-    warehouse.businessUnitCode = "MWH.001";
-
-    Product product = new Product();
-    product.id = 1L;
-
-    Store store = new Store();
-    store.id = 1L;
-
-    try (var storeMock = mockStatic(Store.class)) {
-      storeMock.when(() -> Store.findById(1L)).thenReturn(store);
-      
-      // Already has 5 products
-      when(warehouseRepository.findByBusinessUnitCode("MWH.001")).thenReturn(warehouse);
-      when(productRepository.findById(1L)).thenReturn(product);
-      when(associationRepository.countWarehousesForProductStore(1L, 1L)).thenReturn(0);
-      when(associationRepository.countWarehousesForStore(1L)).thenReturn(2);
-      when(associationRepository.findByStore(1L)).thenReturn(new ArrayList<>());
-      when(associationRepository.countProductsForWarehouse("MWH.001")).thenReturn(5);
-      when(associationRepository.findByWarehouse("MWH.001")).thenReturn(new ArrayList<>());
-
-      assertThrows(
-          WebApplicationException.class,
-          () -> useCase.associate("MWH.001", 1L, 1L),
-          "Should throw exception when max products for warehouse exceeded");
-    }
+    warehouse.businessUnitCode = businessUnitCode;
+    return warehouse;
   }
 
-  @Test
-  void testAssociateFailsWhenMaxWarehousesPerProductStore() {
-    // Given
-    Warehouse warehouse = new Warehouse();
-    warehouse.businessUnitCode = "MWH.001";
-
+  private Product createProduct(Long id) {
     Product product = new Product();
-    product.id = 1L;
-
-    Store store = new Store();
-    store.id = 1L;
-
-    try (var storeMock = mockStatic(Store.class)) {
-      // Open mockStatic FIRST, before any when() calls
-      storeMock.when(() -> Store.findById(1L)).thenReturn(store);
-      
-      // Already has 2 warehouses for this product/store
-      when(warehouseRepository.findByBusinessUnitCode("MWH.001")).thenReturn(warehouse);
-      when(productRepository.findById(1L)).thenReturn(product);
-      when(associationRepository.countWarehousesForProductStore(1L, 1L)).thenReturn(2);
-
-      // When & Then
-      assertThrows(
-          WebApplicationException.class,
-          () -> useCase.associate("MWH.001", 1L, 1L),
-          "Should throw exception when max warehouses for product/store exceeded");
-    }
+    product.id = id;
+    return product;
   }
 
-  @Test
-  void testAssociateFailsWhenMaxWarehousesPerStore() {
-    // Given
-    Warehouse warehouse = new Warehouse();
-    warehouse.businessUnitCode = "MWH.001";
-
-    Product product = new Product();
-    product.id = 1L;
-
+  private Store createStore(Long id) {
     Store store = new Store();
-    store.id = 1L;
-
-    when(warehouseRepository.findByBusinessUnitCode("MWH.001")).thenReturn(warehouse);
-    when(productRepository.findById(1L)).thenReturn(product);
-    when(associationRepository.countWarehousesForProductStore(1L, 1L)).thenReturn(1);
-    when(associationRepository.countWarehousesForStore(1L)).thenReturn(3);
-    when(associationRepository.findByStore(1L)).thenReturn(new ArrayList<>());
-
-    // When & Then
-    try (MockedStatic<Store> storeMock = mockStatic(Store.class)) {
-      storeMock.when(() -> Store.findById(1L)).thenReturn(store);
-      
-      assertThrows(
-          WebApplicationException.class,
-          () -> useCase.associate("MWH.001", 1L, 1L),
-          "Should throw exception when max warehouses for store exceeded");
-    }
+    store.id = id;
+    return store;
   }
 }

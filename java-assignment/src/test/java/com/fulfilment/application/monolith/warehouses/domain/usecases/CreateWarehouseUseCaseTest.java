@@ -116,7 +116,7 @@ public class CreateWarehouseUseCaseTest {
 
     when(locationGateway.resolveByIdentifier("ZWOLLE-001")).thenReturn(location);
     when(warehouseStore.findByBusinessUnitCode("NEW-001"))
-        .thenThrow(new IllegalArgumentException("Not found"));
+        .thenThrow(new IllegalArgumentException("Warehouse not found: NEW-001"));
     when(warehouseStore.getAll()).thenReturn(java.util.List.of(existing));
 
     // When & Then
@@ -139,8 +139,7 @@ public class CreateWarehouseUseCaseTest {
 
     when(locationGateway.resolveByIdentifier("AMSTERDAM-001")).thenReturn(location);
     when(warehouseStore.findByBusinessUnitCode("NEW-001"))
-        .thenThrow(new IllegalArgumentException("Not found"));
-    when(warehouseStore.getAll()).thenReturn(java.util.List.of());
+        .thenThrow(new IllegalArgumentException("Warehouse not found: NEW-001"));
 
     // When & Then
     assertThrows(
@@ -168,7 +167,7 @@ public class CreateWarehouseUseCaseTest {
 
     when(locationGateway.resolveByIdentifier("ZWOLLE-001")).thenReturn(location);
     when(warehouseStore.findByBusinessUnitCode("NEW-001"))
-        .thenThrow(new IllegalArgumentException("Not found"));
+        .thenThrow(new IllegalArgumentException("Warehouse not found: NEW-001"));
     when(warehouseStore.getAll()).thenReturn(java.util.List.of(existing));
 
     // When & Then
