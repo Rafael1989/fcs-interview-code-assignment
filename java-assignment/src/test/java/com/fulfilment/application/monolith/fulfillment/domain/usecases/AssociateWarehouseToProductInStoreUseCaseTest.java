@@ -21,18 +21,21 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 public class AssociateWarehouseToProductInStoreUseCaseTest {
 
-  @Mock private WarehouseProductStoreAssociationRepository associationRepository;
   @Mock private WarehouseRepository warehouseRepository;
-  @Mock private ProductRepository productRepository;
+  private TestProductRepository testProductRepository;
+  private TestWarehouseProductStoreAssociationRepository testAssociationRepository;
 
   private AssociateWarehouseToProductInStoreUseCase useCase;
 
   @BeforeEach
   void setup() {
     useCase = new AssociateWarehouseToProductInStoreUseCase();
-    useCase.setAssociationRepository(associationRepository);
+    testAssociationRepository = new TestWarehouseProductStoreAssociationRepository();
+    useCase.setAssociationRepository(testAssociationRepository);
     useCase.setWarehouseRepository(warehouseRepository);
-    useCase.setProductRepository(productRepository);
+    // Replace mock with stub
+    testProductRepository = new TestProductRepository();
+    useCase.setProductRepository(testProductRepository);
   }
 
   @Test
@@ -52,7 +55,7 @@ public class AssociateWarehouseToProductInStoreUseCaseTest {
     // Given
     when(warehouseRepository.findByBusinessUnitCode("MWH.001"))
         .thenReturn(createWarehouse("MWH.001"));
-    when(productRepository.findById(999L)).thenReturn(null);
+    testProductRepository.setTestProduct(null);
 
     // When & Then
     assertThrows(
@@ -60,6 +63,7 @@ public class AssociateWarehouseToProductInStoreUseCaseTest {
         () -> useCase.associate("MWH.001", 999L, 1L),
         "Should throw exception when product not found");
   }
+
 
   // Helper methods
 
@@ -79,5 +83,58 @@ public class AssociateWarehouseToProductInStoreUseCaseTest {
     Store store = new Store();
     store.id = id;
     return store;
+  }
+
+  private static class TestProductRepository extends ProductRepository {
+    private Product testProduct;
+
+    public void setTestProduct(Product product) {
+      this.testProduct = product;
+    }
+
+    @Override
+    public Product findById(Long id) {
+      return testProduct;
+    }
+  }
+
+  private static class TestWarehouseProductStoreAssociationRepository extends WarehouseProductStoreAssociationRepository {
+    private WarehouseProductStoreAssociation createResult;
+    private java.util.List<WarehouseProductStoreAssociation> findByStoreResult;
+    private java.util.List<WarehouseProductStoreAssociation> findByWarehouseResult;
+    private int countWarehousesForProductStoreResult;
+    private int countWarehousesForStoreResult;
+    private int countProductsForWarehouseResult;
+    public void setCreateResult(WarehouseProductStoreAssociation result) { this.createResult = result; }
+    public WarehouseProductStoreAssociation getCreateResult() { return createResult; }
+    public void setFindByStoreResult(java.util.List<WarehouseProductStoreAssociation> result) { this.findByStoreResult = result; }
+    public void setFindByWarehouseResult(java.util.List<WarehouseProductStoreAssociation> result) { this.findByWarehouseResult = result; }
+    public void setCountWarehousesForProductStoreResult(int result) { this.countWarehousesForProductStoreResult = result; }
+    public void setCountWarehousesForStoreResult(int result) { this.countWarehousesForStoreResult = result; }
+    public void setCountProductsForWarehouseResult(int result) { this.countProductsForWarehouseResult = result; }
+    @Override
+    public WarehouseProductStoreAssociation create(WarehouseProductStoreAssociation association) {
+        return createResult;
+    }
+    @Override
+    public java.util.List<WarehouseProductStoreAssociation> findByStore(Long storeId) {
+        return findByStoreResult;
+    }
+    @Override
+    public java.util.List<WarehouseProductStoreAssociation> findByWarehouse(String warehouseCode) {
+        return findByWarehouseResult;
+    }
+    @Override
+    public int countWarehousesForProductStore(Long productId, Long storeId) {
+        return countWarehousesForProductStoreResult;
+    }
+    @Override
+    public int countWarehousesForStore(Long storeId) {
+        return countWarehousesForStoreResult;
+    }
+    @Override
+    public int countProductsForWarehouse(String warehouseCode) {
+        return countProductsForWarehouseResult;
+    }
   }
 }
