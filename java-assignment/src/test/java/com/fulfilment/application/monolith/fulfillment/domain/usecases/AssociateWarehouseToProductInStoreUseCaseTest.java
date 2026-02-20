@@ -200,6 +200,4 @@ public class AssociateWarehouseToProductInStoreUseCaseTest {
           "Should throw exception when max warehouses for store exceeded");
     }
   }
-        "Should throw exception when max warehouses for store exceeded");
-  }
 }
