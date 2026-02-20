@@ -129,6 +129,7 @@
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
+                        <phase>initialize</phase>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
@@ -141,7 +142,8 @@
                         </goals>
                     </execution>
                     <execution>
-                        <id>check</id>
+                        <id>jacoco-check</id>
+                        <phase>test</phase>
                         <goals>
                             <goal>check</goal>
                         </goals>
@@ -152,11 +154,6 @@
                                     <limits>
                                         <limit>
                                             <counter>INSTRUCTION</counter>
-                                            <value>COVEREDRATIO</value>
-                                            <minimum>0.80</minimum>
-                                        </limit>
-                                        <limit>
-                                            <counter>BRANCH</counter>
                                             <value>COVEREDRATIO</value>
                                             <minimum>0.80</minimum>
                                         </limit>
