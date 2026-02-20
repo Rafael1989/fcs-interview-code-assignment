@@ -8,6 +8,7 @@ import com.fulfilment.application.monolith.fulfillment.adapters.restapi.Fulfillm
 import com.fulfilment.application.monolith.fulfillment.domain.models.WarehouseProductStoreAssociation;
 import com.fulfilment.application.monolith.fulfillment.domain.usecases.AssociateWarehouseToProductInStoreUseCase;
 import jakarta.ws.rs.core.Response;
+import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,10 +28,17 @@ public class FulfillmentResourceImplTest {
   private FulfillmentResourceImpl resource;
 
   @BeforeEach
-  void setup() {
+  void setup() throws Exception {
     resource = new FulfillmentResourceImpl();
-    resource.associateUseCase = associateUseCase;
-    resource.associationRepository = associationRepository;
+    // Use reflection to set private fields
+    setPrivateField(resource, "associateUseCase", associateUseCase);
+    setPrivateField(resource, "associationRepository", associationRepository);
+  }
+
+  private void setPrivateField(Object target, String fieldName, Object value) throws Exception {
+    Field field = target.getClass().getDeclaredField(fieldName);
+    field.setAccessible(true);
+    field.set(target, value);
   }
 
   @Test
