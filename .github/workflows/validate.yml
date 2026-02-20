@@ -38,12 +38,14 @@ jobs:
       with:
         name: jacoco-report
         path: java-assignment/target/site/jacoco/
+        if-no-files-found: ignore
     
-    - name: Display Coverage Results
+    - name: Display Test Results
       if: always()
-      working-directory: ./java-assignment
       run: |
-        echo "✅ Build completed successfully!"
-        echo ""
-        echo "📊 Code Coverage Report:"
-        find target/site/jacoco -name "*.html" | head -1 | xargs echo "Report location:"
+        echo "✅ Build completed!"
+        if [ -d "./java-assignment/target/site/jacoco" ]; then
+          echo "📊 Coverage report generated successfully"
+        else
+          echo "⚠️  Coverage report not found (check test execution)"
+        fi
