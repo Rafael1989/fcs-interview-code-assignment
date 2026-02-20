@@ -36,6 +36,15 @@ public class FulfillmentResourceImpl {
   // Construtor público para cobertura Jacoco
   public FulfillmentResourceImpl() {}
 
+  // Setters para testes
+  public void setAssociateUseCase(AssociateWarehouseToProductInStoreUseCase useCase) {
+    this.associateUseCase = useCase;
+  }
+
+  public void setAssociationRepository(WarehouseProductStoreAssociationRepository repository) {
+    this.associationRepository = repository;
+  }
+
   // Métodos para garantir cobertura de branch
   @Override
   public boolean equals(Object obj) {
