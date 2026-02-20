@@ -17,6 +17,7 @@ import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.jboss.logging.Logger;
@@ -51,13 +52,15 @@ public class FulfillmentResourceImpl {
       @PathParam("warehouseCode") String warehouseCode) {
     return associationRepository.findByWarehouse(warehouseCode).stream()
         .map(
-            a ->
-                (Map<String, Object>) Map.of(
-                    "id", a.id,
-                    "warehouseBusinessUnitCode", a.warehouseBusinessUnitCode,
-                    "productId", a.productId,
-                    "storeId", a.storeId,
-                    "createdAt", a.createdAt))
+            a -> {
+              Map<String, Object> map = new HashMap<>();
+              map.put("id", a.id);
+              map.put("warehouseBusinessUnitCode", a.warehouseBusinessUnitCode);
+              map.put("productId", a.productId);
+              map.put("storeId", a.storeId);
+              map.put("createdAt", a.createdAt);
+              return map;
+            })
         .toList();
   }
 
@@ -66,13 +69,15 @@ public class FulfillmentResourceImpl {
   public List<Map<String, Object>> getAssociationsByStore(@PathParam("storeId") Long storeId) {
     return associationRepository.findByStore(storeId).stream()
         .map(
-            a ->
-                (Map<String, Object>) Map.of(
-                    "id", a.id,
-                    "warehouseBusinessUnitCode", a.warehouseBusinessUnitCode,
-                    "productId", a.productId,
-                    "storeId", a.storeId,
-                    "createdAt", a.createdAt))
+            a -> {
+              Map<String, Object> map = new HashMap<>();
+              map.put("id", a.id);
+              map.put("warehouseBusinessUnitCode", a.warehouseBusinessUnitCode);
+              map.put("productId", a.productId);
+              map.put("storeId", a.storeId);
+              map.put("createdAt", a.createdAt);
+              return map;
+            })
         .toList();
   }
 
@@ -82,13 +87,15 @@ public class FulfillmentResourceImpl {
       @PathParam("productId") Long productId, @PathParam("storeId") Long storeId) {
     return associationRepository.findByProductAndStore(productId, storeId).stream()
         .map(
-            a ->
-                (Map<String, Object>) Map.of(
-                    "id", a.id,
-                    "warehouseBusinessUnitCode", a.warehouseBusinessUnitCode,
-                    "productId", a.productId,
-                    "storeId", a.storeId,
-                    "createdAt", a.createdAt))
+            a -> {
+              Map<String, Object> map = new HashMap<>();
+              map.put("id", a.id);
+              map.put("warehouseBusinessUnitCode", a.warehouseBusinessUnitCode);
+              map.put("productId", a.productId);
+              map.put("storeId", a.storeId);
+              map.put("createdAt", a.createdAt);
+              return map;
+            })
         .toList();
   }
 
