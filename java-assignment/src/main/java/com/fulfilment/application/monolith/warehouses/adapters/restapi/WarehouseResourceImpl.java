@@ -19,10 +19,10 @@ public class WarehouseResourceImpl implements WarehouseResource {
   @Inject private ArchiveWarehouseUseCase archiveWarehouseUseCase;
   @Inject private ReplaceWarehouseUseCase replaceWarehouseUseCase;
 
-  // Construtor público para cobertura Jacoco
+  // Public constructor for JaCoCo coverage
   public WarehouseResourceImpl() {}
 
-  // Setters para testes
+  // Setters for testing
   public void setWarehouseRepository(WarehouseRepository warehouseRepository) {
     this.warehouseRepository = warehouseRepository;
   }

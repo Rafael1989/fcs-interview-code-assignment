@@ -33,10 +33,8 @@ public class FulfillmentResourceImpl {
 
   private static final Logger LOGGER = Logger.getLogger(FulfillmentResourceImpl.class.getName());
 
-  // Construtor público para cobertura Jacoco
   public FulfillmentResourceImpl() {}
 
-  // Setters para testes
   public void setAssociateUseCase(AssociateWarehouseToProductInStoreUseCase useCase) {
     this.associateUseCase = useCase;
   }
@@ -45,7 +43,6 @@ public class FulfillmentResourceImpl {
     this.associationRepository = repository;
   }
 
-  // Métodos para garantir cobertura de branch
   @Override
   public boolean equals(Object obj) {
     return super.equals(obj);

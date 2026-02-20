@@ -19,7 +19,6 @@ class FulfillmentErrorMapperTest {
   void setUp() {
     objectMapper = new ObjectMapper();
     errorMapper = new FulfillmentResourceImpl.ErrorMapper();
-    // Set the objectMapper using reflection since it's injected
     try {
       var field = errorMapper.getClass().getDeclaredField("objectMapper");
       field.setAccessible(true);

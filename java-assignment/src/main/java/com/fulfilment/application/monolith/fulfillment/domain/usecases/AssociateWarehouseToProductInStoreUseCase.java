@@ -31,25 +31,21 @@ public class AssociateWarehouseToProductInStoreUseCase {
   public WarehouseProductStoreAssociation associate(
       String warehouseBusinessUnitCode, Long productId, Long storeId) {
 
-    // Validate warehouse exists
     var warehouse = warehouseRepository.findByBusinessUnitCode(warehouseBusinessUnitCode);
     if (warehouse == null) {
       throw new WebApplicationException("Warehouse not found: " + warehouseBusinessUnitCode, 404);
     }
 
-    // Validate product exists
     var product = productRepository.findById(productId);
     if (product == null) {
       throw new WebApplicationException("Product not found: " + productId, 404);
     }
 
-    // Validate store exists
     var store = Store.findById(storeId);
     if (store == null) {
       throw new WebApplicationException("Store not found: " + storeId, 404);
     }
 
-    // Validate constraint 1: Each Product can be fulfilled by max 2 different Warehouses per Store
     int warehousesForProductStore =
         associationRepository.countWarehousesForProductStore(productId, storeId);
     if (warehousesForProductStore >= 2) {
@@ -57,7 +53,6 @@ public class AssociateWarehouseToProductInStoreUseCase {
           "Maximum number of warehouses (2) reached for this product in this store", 400);
     }
 
-    // Validate constraint 2: Each Store can be fulfilled by max 3 different Warehouses
     int warehousesForStore = associationRepository.countWarehousesForStore(storeId);
     if (warehousesForStore >= 3
         && !associationRepository.findByStore(storeId).stream()
@@ -66,7 +61,6 @@ public class AssociateWarehouseToProductInStoreUseCase {
           "Maximum number of warehouses (3) reached for this store", 400);
     }
 
-    // Validate constraint 3: Each Warehouse can store max 5 types of Products
     int productsForWarehouse =
         associationRepository.countProductsForWarehouse(warehouseBusinessUnitCode);
     if (productsForWarehouse >= 5
@@ -76,7 +70,6 @@ public class AssociateWarehouseToProductInStoreUseCase {
           "Maximum number of products (5) reached for this warehouse", 400);
     }
 
-    // Create the association
     var association = new WarehouseProductStoreAssociation();
     association.warehouseBusinessUnitCode = warehouseBusinessUnitCode;
     association.productId = productId;

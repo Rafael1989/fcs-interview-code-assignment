@@ -2,7 +2,6 @@ package com.fulfilment.application.monolith.fulfillment.domain.models;
 
 import java.time.LocalDateTime;
 
-@SuppressWarnings("unused")
 public class WarehouseProductStoreAssociation {
 
   public Long id;
@@ -15,7 +14,6 @@ public class WarehouseProductStoreAssociation {
 
   public LocalDateTime createdAt;
 
-  // Construtor padrão para cobertura Jacoco
   public WarehouseProductStoreAssociation() {}
 
   public Long getId() { return id; }

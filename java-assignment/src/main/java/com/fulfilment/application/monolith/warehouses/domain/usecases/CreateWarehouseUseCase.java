@@ -25,23 +25,19 @@ public class CreateWarehouseUseCase implements CreateWarehouseOperation {
 
   @Override
   public void create(Warehouse warehouse) {
-    // Validate location
     var location = locationResolver.resolveByIdentifier(warehouse.location);
 
-    // Verify business unit code is unique
     try {
       warehouseStore.findByBusinessUnitCode(warehouse.businessUnitCode);
       throw new IllegalArgumentException(
           "Business Unit Code already exists: " + warehouse.businessUnitCode);
     } catch (IllegalArgumentException e) {
       if (e.getMessage().contains("not found")) {
-        // Good, code doesn't exist yet
       } else {
         throw e;
       }
     }
 
-    // Check if can create warehouse at this location
     var warehousesAtLocation =
         warehouseStore.getAll().stream()
             .filter(w -> w.location.equals(warehouse.location) && w.archivedAt == null)
@@ -52,7 +48,6 @@ public class CreateWarehouseUseCase implements CreateWarehouseOperation {
           "Maximum number of warehouses reached for location: " + warehouse.location);
     }
 
-    // Validate capacity
     var totalCapacityAtLocation =
         warehouseStore.getAll().stream()
             .filter(w -> w.location.equals(warehouse.location) && w.archivedAt == null)
@@ -71,7 +66,6 @@ public class CreateWarehouseUseCase implements CreateWarehouseOperation {
 
     warehouse.createdAt = LocalDateTime.now();
 
-    // if all went well, create the warehouse
     warehouseStore.create(warehouse);
   }
 }

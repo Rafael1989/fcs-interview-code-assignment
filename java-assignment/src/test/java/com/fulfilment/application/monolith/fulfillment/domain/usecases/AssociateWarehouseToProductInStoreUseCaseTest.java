@@ -11,7 +11,6 @@ import com.fulfilment.application.monolith.stores.Store;
 import com.fulfilment.application.monolith.warehouses.adapters.database.WarehouseRepository;
 import com.fulfilment.application.monolith.warehouses.domain.models.Warehouse;
 import jakarta.ws.rs.WebApplicationException;
-import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,7 +32,6 @@ public class AssociateWarehouseToProductInStoreUseCaseTest {
     testAssociationRepository = new TestWarehouseProductStoreAssociationRepository();
     useCase.setAssociationRepository(testAssociationRepository);
     useCase.setWarehouseRepository(warehouseRepository);
-    // Replace mock with stub
     testProductRepository = new TestProductRepository();
     useCase.setProductRepository(testProductRepository);
   }
@@ -71,18 +69,6 @@ public class AssociateWarehouseToProductInStoreUseCaseTest {
     Warehouse warehouse = new Warehouse();
     warehouse.businessUnitCode = businessUnitCode;
     return warehouse;
-  }
-
-  private Product createProduct(Long id) {
-    Product product = new Product();
-    product.id = id;
-    return product;
-  }
-
-  private Store createStore(Long id) {
-    Store store = new Store();
-    store.id = id;
-    return store;
   }
 
   private static class TestProductRepository extends ProductRepository {

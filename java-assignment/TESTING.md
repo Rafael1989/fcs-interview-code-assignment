@@ -1,69 +1,69 @@
-# Testes e Code Coverage
+# Testing and Code Coverage
 
-## Resumo dos Testes Implementados
+## Summary of Implemented Tests
 
-### Unit Tests (20 testes)
+### Unit Tests (20+ tests)
 
-#### 1. CreateWarehouseUseCaseTest (6 testes)
-- ✅ `testCreateWarehouseSuccessfully()` - Testa criação bem-sucedida de warehouse
-- ❌ `testCreateWarehouseFailsWhenLocationNotFound()` - Falha quando localização inválida
-- ❌ `testCreateWarehouseFailsWhenDuplicateBusinessUnitCode()` - Falha em código de negócio duplicado
-- ❌ `testCreateWarehouseFailsWhenMaxWarehousesExceeded()` - Falha quando máximo de warehouses atingido
-- ❌ `testCreateWarehouseFailsWhenStockExceedsCapacity()` - Falha quando estoque > capacidade
-- ❌ `testCreateWarehouseFailsWhenExceedsLocationCapacity()` - Falha quando excede capacidade da localização
+#### 1. CreateWarehouseUseCaseTest (6 tests)
+- ✅ `testCreateWarehouseSuccessfully()` - Tests successful warehouse creation
+- ✅ `testCreateWarehouseFailsWhenLocationNotFound()` - Fails when location is invalid
+- ✅ `testCreateWarehouseFailsWhenDuplicateBusinessUnitCode()` - Fails on duplicate business unit code
+- ✅ `testCreateWarehouseFailsWhenMaxWarehousesExceeded()` - Fails when max warehouses reached
+- ✅ `testCreateWarehouseFailsWhenStockExceedsCapacity()` - Fails when stock > capacity
+- ✅ `testCreateWarehouseFailsWhenExceedsLocationCapacity()` - Fails when exceeds location capacity
 
-#### 2. ArchiveWarehouseUseCaseTest (3 testes)
-- ✅ `testArchiveWarehouseSuccessfully()` - Testa arquivamento bem-sucedido
-- ❌ `testArchiveWarehouseFailsWhenNotFound()` - Falha quando warehouse não encontrado
-- ✅ `testArchiveAlreadyArchivedWarehouse()` - Testa re-arquivamento
+#### 2. ArchiveWarehouseUseCaseTest (3 tests)
+- ✅ `testArchiveWarehouseSuccessfully()` - Tests successful archival
+- ✅ `testArchiveWarehouseFailsWhenNotFound()` - Fails when warehouse not found
+- ✅ `testArchiveAlreadyArchivedWarehouse()` - Tests re-archival
 
-#### 3. ReplaceWarehouseUseCaseTest (5 testes)
-- ✅ `testReplaceWarehouseSuccessfully()` - Testa substituição bem-sucedida
-- ❌ `testReplaceWarehouseFailsWhenCapacityInsufficient()` - Falha quando capacidade insuficiente
-- ❌ `testReplaceWarehouseFailsWhenStockMismatch()` - Falha quando estoque não combina
-- ❌ `testReplaceWarehouseFailsWhenNotFound()` - Falha quando warehouse não encontrado
-- ✅ `testReplaceWarehouseWithBetterCapacity()` - Testa melhoria de capacidade
+#### 3. ReplaceWarehouseUseCaseTest (5 tests)
+- ✅ `testReplaceWarehouseSuccessfully()` - Tests successful replacement
+- ✅ `testReplaceWarehouseFailsWhenCapacityInsufficient()` - Fails when capacity insufficient
+- ✅ `testReplaceWarehouseFailsWhenStockMismatch()` - Fails when stock doesn't match
+- ✅ `testReplaceWarehouseFailsWhenNotFound()` - Fails when warehouse not found
+- ✅ `testReplaceWarehouseWithBetterCapacity()` - Tests capacity improvement
 
-#### 4. AssociateWarehouseToProductInStoreUseCaseTest (6 testes)
-- ✅ `testAssociateSuccessfully()` - Testa associação bem-sucedida
-- ❌ `testAssociateFailsWhenWarehouseNotFound()` - Falha quando warehouse não encontrado
-- ❌ `testAssociateFailsWhenProductNotFound()` - Falha quando produto não encontrado
-- ❌ `testAssociateFailsWhenMaxProductsPerWarehouse()` - Falha quando máximo de produtos atingido (5)
-- ❌ `testAssociateFailsWhenMaxWarehousesPerProductStore()` - Falha quando máximo de warehouses por produto/loja atingido (2)
-- ❌ `testAssociateFailsWhenMaxWarehousesPerStore()` - Falha quando máximo de warehouses por loja atingido (3)
+#### 4. AssociateWarehouseToProductInStoreUseCaseTest (6 tests)
+- ✅ `testAssociateSuccessfully()` - Tests successful association
+- ✅ `testAssociateFailsWhenWarehouseNotFound()` - Fails when warehouse not found
+- ✅ `testAssociateFailsWhenProductNotFound()` - Fails when product not found
+- ✅ `testAssociateFailsWhenMaxProductsPerWarehouse()` - Fails when max products reached (5)
+- ✅ `testAssociateFailsWhenMaxWarehousesPerProductStore()` - Fails when max warehouses per product/store reached (2)
+- ✅ `testAssociateFailsWhenMaxWarehousesPerStore()` - Fails when max warehouses per store reached (3)
 
-## Como Rodar os Testes
+## How to Run the Tests
 
-### Executar todos os testes:
+### Run all tests:
 ```bash
 ./mvnw test
 ```
 
-### Executar um teste específico:
+### Run a specific test:
 ```bash
 ./mvnw test -Dtest=CreateWarehouseUseCaseTest
 ```
 
-### Executar com cobertura JaCoCo:
+### Run with JaCoCo coverage:
 ```bash
 ./mvnw clean test jacoco:report
 ```
 
-### Visualizar relatório de cobertura:
-Após executar `jacoco:report`, o relatório estará em:
+### View coverage report:
+After running `jacoco:report`, the report will be in:
 ```
 target/site/jacoco/index.html
 ```
 
 ## Code Coverage
 
-### Meta de Cobertura
-- **Mínimo obrigatório**: 80% (configurado no pom.xml)
-- **Alvo**: 85%+
+### Coverage Goals
+- **Minimum required**: 80% (configured in pom.xml)
+- **Target**: 85%+
 
-### Configuração JaCoCo
+### JaCoCo Configuration
 
-O pom.xml foi configurado com:
+The pom.xml is configured with:
 
 ```xml
 <plugin>
@@ -71,13 +71,13 @@ O pom.xml foi configurado com:
     <artifactId>jacoco-maven-plugin</artifactId>
     <version>0.8.10</version>
     <executions>
-        <!-- Prepara agente para coleta de cobertura -->
+        <!-- Prepare agent for coverage collection -->
         <execution>
             <goals>
                 <goal>prepare-agent</goal>
             </goals>
         </execution>
-        <!-- Gera relatório HTML -->
+        <!-- Generate HTML report -->
         <execution>
             <id>report</id>
             <phase>test</phase>
@@ -85,7 +85,7 @@ O pom.xml foi configurado com:
                 <goal>report</goal>
             </goals>
         </execution>
-        <!-- Valida cobertura mínima de 80% -->
+        <!-- Validate minimum 80% coverage -->
         <execution>
             <id>jacoco-check</id>
             <goals>
@@ -110,20 +110,20 @@ O pom.xml foi configurado com:
 </plugin>
 ```
 
-## Dependências de Teste Adicionadas
+## Additional Test Dependencies
 
-- **Mockito**: Para mocks e stubs
-- **Mockito JUnit 5**: Integração Mockito com JUnit 5
-- **Hamcrest**: Para assertions mais intuitivas
-- **JaCoCo**: Para análise de cobertura de código
+- **Mockito**: For mocks and stubs
+- **Mockito JUnit 5**: Mockito integration with JUnit 5
+- **Hamcrest**: For more intuitive assertions
+- **JaCoCo**: For code coverage analysis
 
-## Boas Práticas de Testes Aplicadas
+## Test Best Practices Applied
 
-### 1. Nomenclatura Descritiva
-- Cada teste começa com `test` seguido do comportamento testado
-- Exemplo: `testCreateWarehouseFailsWhenDuplicateBusinessUnitCode()`
+### 1. Descriptive Naming
+- Each test starts with `test` followed by the behavior being tested
+- Example: `testCreateWarehouseFailsWhenDuplicateBusinessUnitCode()`
 
-### 2. Padrão Arrange-Act-Assert (AAA)
+### 2. Arrange-Act-Assert (AAA) Pattern
 ```java
 // Arrange - Setup
 Warehouse warehouse = new Warehouse();
@@ -132,50 +132,50 @@ warehouse.businessUnitCode = "NEW-001";
 // Act - Execute
 useCase.create(warehouse);
 
-// Assert - Verificação
+// Assert - Verification
 verify(warehouseStore).create(warehouse);
 assertNotNull(warehouse.createdAt);
 ```
 
-### 3. Testes de Erro Abrangentes
-- Cada validação de negócio tem um teste de falha
-- Cenários positivos e negativos cobertos
+### 3. Comprehensive Error Testing
+- Each business validation has a failure test
+- Both positive and negative scenarios covered
 
-### 4. Uso de Mocks
-- Isolamento de dependências
-- Testes rápidos e determinísticos
-- Sem necessidade de banco de dados real
+### 4. Use of Mocks
+- Dependency isolation
+- Fast and deterministic tests
+- No need for real database
 
-## Cobertura por Módulo
+## Coverage by Module
 
-| Módulo | Testes | Cobertura |
-|--------|--------|-----------|
+| Module | Tests | Coverage |
+|--------|-------|----------|
 | CreateWarehouseUseCase | 6 | 95%+ |
 | ArchiveWarehouseUseCase | 3 | 90%+ |
 | ReplaceWarehouseUseCase | 5 | 95%+ |
 | AssociateWarehouseToProductInStore | 6 | 90%+ |
-| **Total** | **20** | **80%+** |
+| **Total** | **20+** | **80%+** |
 
 ## CI/CD Integration
 
-Para integrar com CI/CD (GitHub Actions, Jenkins, etc.):
+To integrate with CI/CD (GitHub Actions, Jenkins, etc.):
 
 ```bash
-# Build com cobertura
+# Build with coverage
 ./mvnw clean test jacoco:report
 
-# Falha se cobertura < 80%
+# Fails if coverage < 80%
 ./mvnw jacoco:check
 
-# Se tudo passar, fazer push
+# If everything passes, push
 git add .
 git commit -m "Tests and coverage"
 git push
 ```
 
-## Próximos Passos
+## Next Steps
 
-- [ ] Adicionar testes de integração (E2E) para endpoints REST
-- [ ] Implementar testes de performance
-- [ ] Adicionar testes de mutação (PIT)
-- [ ] Documentar casos de teste no Jira/Azure DevOps
+- [ ] Add integration tests (E2E) for REST endpoints
+- [ ] Implement performance tests
+- [ ] Add mutation tests (PIT)
+- [ ] Document test cases in Jira/Azure DevOps

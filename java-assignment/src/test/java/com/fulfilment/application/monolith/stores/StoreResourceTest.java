@@ -22,7 +22,6 @@ class StoreResourceTest {
     @BeforeEach
     @Transactional
     void setup() {
-        // Limpa o banco de dados em memória antes de cada teste
         Store.deleteAll();
         // Mock do gateway legado
         resource.legacyStoreManagerGateway = mock(LegacyStoreManagerGateway.class);
@@ -275,7 +274,6 @@ class StoreResourceTest {
 
         Store update = new Store();
         update.name = "PartialUpdated";
-        // Não altera quantityProductsInStock
 
         Store result = resource.update(store.id, update);
         assertEquals("PartialUpdated", result.name);

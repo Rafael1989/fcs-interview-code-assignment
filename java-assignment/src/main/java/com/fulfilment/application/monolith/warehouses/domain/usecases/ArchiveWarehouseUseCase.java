@@ -17,13 +17,10 @@ public class ArchiveWarehouseUseCase implements ArchiveWarehouseOperation {
 
   @Override
   public void archive(Warehouse warehouse) {
-    // Get the warehouse from database
     var existingWarehouse = warehouseStore.findByBusinessUnitCode(warehouse.businessUnitCode);
 
-    // Set archive timestamp
     existingWarehouse.archivedAt = LocalDateTime.now();
 
-    // Update in database
     warehouseStore.update(existingWarehouse);
   }
 }

@@ -25,7 +25,6 @@ class FulfillmentResourceImplTest {
         useCase = mock(AssociateWarehouseToProductInStoreUseCase.class);
         repo = mock(WarehouseProductStoreAssociationRepository.class);
 
-        // Usando reflexão para injetar os mocks nos campos privados
         Field useCaseField = FulfillmentResourceImpl.class.getDeclaredField("associateUseCase");
         useCaseField.setAccessible(true);
         useCaseField.set(resource, useCase);

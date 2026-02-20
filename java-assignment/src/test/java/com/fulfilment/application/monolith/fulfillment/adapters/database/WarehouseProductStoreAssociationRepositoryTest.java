@@ -20,7 +20,6 @@ class WarehouseProductStoreAssociationRepositoryTest {
     @BeforeEach
     @Transactional
     void clean() {
-        // Limpa todas as associações antes de cada teste
         repo.deleteAll();
     }
 
