@@ -82,8 +82,7 @@ public class AssociateWarehouseToProductInStoreUseCaseTest {
   @Test
   void testAssociateFailsWhenWarehouseNotFound() {
     // Given
-    when(warehouseRepository.findByBusinessUnitCode("INVALID"))
-        .thenThrow(new IllegalArgumentException("Warehouse not found"));
+    when(warehouseRepository.findByBusinessUnitCode("INVALID")).thenReturn(null);
 
     // When & Then
     assertThrows(
@@ -127,12 +126,10 @@ public class AssociateWarehouseToProductInStoreUseCaseTest {
     when(associationRepository.countWarehousesForStore(1L)).thenReturn(2);
     when(associationRepository.findByStore(1L)).thenReturn(new ArrayList<>());
     when(associationRepository.countProductsForWarehouse("MWH.001")).thenReturn(5);
-
-    List<WarehouseProductStoreAssociation> existingAssocs = new ArrayList<>();
-    when(associationRepository.findByWarehouse("MWH.001")).thenReturn(existingAssocs);
+    when(associationRepository.findByWarehouse("MWH.001")).thenReturn(new ArrayList<>());
 
     // When & Then
-    try (MockedStatic<Store> storeMock = mockStatic(Store.class)) {
+    try (var storeMock = mockStatic(Store.class)) {
       storeMock.when(() -> Store.findById(1L)).thenReturn(store);
       
       assertThrows(
@@ -160,7 +157,7 @@ public class AssociateWarehouseToProductInStoreUseCaseTest {
     when(associationRepository.countWarehousesForProductStore(1L, 1L)).thenReturn(2);
 
     // When & Then
-    try (MockedStatic<Store> storeMock = mockStatic(Store.class)) {
+    try (var storeMock = mockStatic(Store.class)) {
       storeMock.when(() -> Store.findById(1L)).thenReturn(store);
       
       assertThrows(
@@ -186,9 +183,7 @@ public class AssociateWarehouseToProductInStoreUseCaseTest {
     when(productRepository.findById(1L)).thenReturn(product);
     when(associationRepository.countWarehousesForProductStore(1L, 1L)).thenReturn(1);
     when(associationRepository.countWarehousesForStore(1L)).thenReturn(3);
-
-    List<WarehouseProductStoreAssociation> existingAssocs = new ArrayList<>();
-    when(associationRepository.findByStore(1L)).thenReturn(existingAssocs);
+    when(associationRepository.findByStore(1L)).thenReturn(new ArrayList<>());
 
     // When & Then
     try (MockedStatic<Store> storeMock = mockStatic(Store.class)) {
