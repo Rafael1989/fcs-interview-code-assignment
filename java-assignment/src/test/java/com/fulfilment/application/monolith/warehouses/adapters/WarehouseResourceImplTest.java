@@ -9,7 +9,6 @@ import com.fulfilment.application.monolith.warehouses.domain.models.Warehouse;
 import com.fulfilment.application.monolith.warehouses.domain.usecases.ArchiveWarehouseUseCase;
 import com.fulfilment.application.monolith.warehouses.domain.usecases.CreateWarehouseUseCase;
 import com.fulfilment.application.monolith.warehouses.domain.usecases.ReplaceWarehouseUseCase;
-import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,19 +29,12 @@ public class WarehouseResourceImplTest {
   private WarehouseResourceImpl resource;
 
   @BeforeEach
-  void setup() throws Exception {
+  void setup() {
     resource = new WarehouseResourceImpl();
-    // Use reflection to set private fields
-    setPrivateField(resource, "warehouseRepository", warehouseRepository);
-    setPrivateField(resource, "createWarehouseUseCase", createWarehouseUseCase);
-    setPrivateField(resource, "archiveWarehouseUseCase", archiveWarehouseUseCase);
-    setPrivateField(resource, "replaceWarehouseUseCase", replaceWarehouseUseCase);
-  }
-
-  private void setPrivateField(Object target, String fieldName, Object value) throws Exception {
-    Field field = target.getClass().getDeclaredField(fieldName);
-    field.setAccessible(true);
-    field.set(target, value);
+    resource.setWarehouseRepository(warehouseRepository);
+    resource.setCreateWarehouseUseCase(createWarehouseUseCase);
+    resource.setArchiveWarehouseUseCase(archiveWarehouseUseCase);
+    resource.setReplaceWarehouseUseCase(replaceWarehouseUseCase);
   }
 
   @Test

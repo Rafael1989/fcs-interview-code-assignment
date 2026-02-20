@@ -19,6 +19,26 @@ public class WarehouseResourceImpl implements WarehouseResource {
   @Inject private ArchiveWarehouseUseCase archiveWarehouseUseCase;
   @Inject private ReplaceWarehouseUseCase replaceWarehouseUseCase;
 
+  // Construtor público para cobertura Jacoco
+  public WarehouseResourceImpl() {}
+
+  // Setters para testes
+  public void setWarehouseRepository(WarehouseRepository warehouseRepository) {
+    this.warehouseRepository = warehouseRepository;
+  }
+
+  public void setCreateWarehouseUseCase(CreateWarehouseUseCase createWarehouseUseCase) {
+    this.createWarehouseUseCase = createWarehouseUseCase;
+  }
+
+  public void setArchiveWarehouseUseCase(ArchiveWarehouseUseCase archiveWarehouseUseCase) {
+    this.archiveWarehouseUseCase = archiveWarehouseUseCase;
+  }
+
+  public void setReplaceWarehouseUseCase(ReplaceWarehouseUseCase replaceWarehouseUseCase) {
+    this.replaceWarehouseUseCase = replaceWarehouseUseCase;
+  }
+
   @Override
   public List<Warehouse> listAllWarehousesUnits() {
     return warehouseRepository.getAll().stream().map(this::toWarehouseResponse).toList();
