@@ -9,7 +9,6 @@ import com.fulfilment.application.monolith.warehouses.domain.models.Warehouse;
 import com.fulfilment.application.monolith.warehouses.domain.usecases.ArchiveWarehouseUseCase;
 import com.fulfilment.application.monolith.warehouses.domain.usecases.CreateWarehouseUseCase;
 import com.fulfilment.application.monolith.warehouses.domain.usecases.ReplaceWarehouseUseCase;
-import com.warehouse.api.beans.Warehouse as ApiWarehouse;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +43,7 @@ public class WarehouseResourceImplTest {
     when(warehouseRepository.getAll()).thenReturn(new ArrayList<>());
 
     // When
-    List<ApiWarehouse> result = resource.listAllWarehousesUnits();
+    List<com.warehouse.api.beans.Warehouse> result = resource.listAllWarehousesUnits();
 
     // Then
     assertNotNull(result);
@@ -70,7 +69,7 @@ public class WarehouseResourceImplTest {
     when(warehouseRepository.getAll()).thenReturn(List.of(w1, w2));
 
     // When
-    List<ApiWarehouse> result = resource.listAllWarehousesUnits();
+    List<com.warehouse.api.beans.Warehouse> result = resource.listAllWarehousesUnits();
 
     // Then
     assertNotNull(result);
@@ -82,7 +81,7 @@ public class WarehouseResourceImplTest {
   @Test
   void testCreateANewWarehouseUnit() {
     // Given
-    ApiWarehouse apiWarehouse = new ApiWarehouse();
+    com.warehouse.api.beans.Warehouse apiWarehouse = new com.warehouse.api.beans.Warehouse();
     apiWarehouse.setBusinessUnitCode("NEW-WH");
     apiWarehouse.setLocation("ROTTERDAM-001");
     apiWarehouse.setCapacity(120);
@@ -91,7 +90,7 @@ public class WarehouseResourceImplTest {
     doNothing().when(createWarehouseUseCase).create(any());
 
     // When
-    ApiWarehouse result = resource.createANewWarehouseUnit(apiWarehouse);
+    com.warehouse.api.beans.Warehouse result = resource.createANewWarehouseUnit(apiWarehouse);
 
     // Then
     assertNotNull(result);
@@ -111,7 +110,7 @@ public class WarehouseResourceImplTest {
     when(warehouseRepository.findByBusinessUnitCode("WH-001")).thenReturn(warehouse);
 
     // When
-    ApiWarehouse result = resource.getAWarehouseUnitByID("WH-001");
+    com.warehouse.api.beans.Warehouse result = resource.getAWarehouseUnitByID("WH-001");
 
     // Then
     assertNotNull(result);
@@ -144,7 +143,7 @@ public class WarehouseResourceImplTest {
   @Test
   void testReplaceTheCurrentActiveWarehouse() {
     // Given
-    ApiWarehouse apiWarehouse = new ApiWarehouse();
+    com.warehouse.api.beans.Warehouse apiWarehouse = new com.warehouse.api.beans.Warehouse();
     apiWarehouse.setBusinessUnitCode("WH-001");
     apiWarehouse.setLocation("ROTTERDAM-001");
     apiWarehouse.setCapacity(150);
@@ -153,7 +152,7 @@ public class WarehouseResourceImplTest {
     doNothing().when(replaceWarehouseUseCase).replace(any());
 
     // When
-    ApiWarehouse result = resource.replaceTheCurrentActiveWarehouse("WH-001", apiWarehouse);
+    com.warehouse.api.beans.Warehouse result = resource.replaceTheCurrentActiveWarehouse("WH-001", apiWarehouse);
 
     // Then
     assertNotNull(result);
