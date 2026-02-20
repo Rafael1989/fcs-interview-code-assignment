@@ -19,6 +19,10 @@ public class CreateWarehouseUseCase implements CreateWarehouseOperation {
     this.warehouseStore = warehouseStore;
   }
 
+  public void setLocationResolver(LocationResolver locationResolver) {
+    this.locationResolver = locationResolver;
+  }
+
   @Override
   public void create(Warehouse warehouse) {
     // Validate location

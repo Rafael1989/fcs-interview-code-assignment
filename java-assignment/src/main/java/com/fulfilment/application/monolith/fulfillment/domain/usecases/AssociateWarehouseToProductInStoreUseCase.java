@@ -16,6 +16,18 @@ public class AssociateWarehouseToProductInStoreUseCase {
   @Inject private WarehouseRepository warehouseRepository;
   @Inject private ProductRepository productRepository;
 
+  public void setAssociationRepository(WarehouseProductStoreAssociationRepository associationRepository) {
+    this.associationRepository = associationRepository;
+  }
+
+  public void setWarehouseRepository(WarehouseRepository warehouseRepository) {
+    this.warehouseRepository = warehouseRepository;
+  }
+
+  public void setProductRepository(ProductRepository productRepository) {
+    this.productRepository = productRepository;
+  }
+
   public WarehouseProductStoreAssociation associate(
       String warehouseBusinessUnitCode, Long productId, Long storeId) {
 

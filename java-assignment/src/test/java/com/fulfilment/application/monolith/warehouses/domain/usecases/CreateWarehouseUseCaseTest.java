@@ -24,7 +24,7 @@ public class CreateWarehouseUseCaseTest {
   @BeforeEach
   void setup() {
     useCase = new CreateWarehouseUseCase(warehouseStore);
-    useCase.locationResolver = locationGateway;
+    useCase.setLocationResolver(locationGateway);
   }
 
   @Test

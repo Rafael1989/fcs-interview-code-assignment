@@ -17,6 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,9 +32,9 @@ public class AssociateWarehouseToProductInStoreUseCaseTest {
   @BeforeEach
   void setup() {
     useCase = new AssociateWarehouseToProductInStoreUseCase();
-    useCase.associationRepository = associationRepository;
-    useCase.warehouseRepository = warehouseRepository;
-    useCase.productRepository = productRepository;
+    useCase.setAssociationRepository(associationRepository);
+    useCase.setWarehouseRepository(warehouseRepository);
+    useCase.setProductRepository(productRepository);
   }
 
   @Test
@@ -50,7 +51,6 @@ public class AssociateWarehouseToProductInStoreUseCaseTest {
 
     when(warehouseRepository.findByBusinessUnitCode("MWH.001")).thenReturn(warehouse);
     when(productRepository.findById(1L)).thenReturn(product);
-    when(store.find("id", 1L)).thenReturn(store);
     when(associationRepository.countWarehousesForProductStore(1L, 1L)).thenReturn(0);
     when(associationRepository.countWarehousesForStore(1L)).thenReturn(1);
     when(associationRepository.findByStore(1L)).thenReturn(new ArrayList<>());
@@ -66,13 +66,17 @@ public class AssociateWarehouseToProductInStoreUseCaseTest {
     when(associationRepository.create(any())).thenReturn(created);
 
     // When
-    WarehouseProductStoreAssociation result = useCase.associate("MWH.001", 1L, 1L);
+    try (MockedStatic<Store> storeMock = mockStatic(Store.class)) {
+      storeMock.when(() -> Store.findById(1L)).thenReturn(store);
+      
+      WarehouseProductStoreAssociation result = useCase.associate("MWH.001", 1L, 1L);
 
-    // Then
-    assertNotNull(result);
-    assertEquals("MWH.001", result.warehouseBusinessUnitCode);
-    assertEquals(1L, result.productId);
-    assertEquals(1L, result.storeId);
+      // Then
+      assertNotNull(result);
+      assertEquals("MWH.001", result.warehouseBusinessUnitCode);
+      assertEquals(1L, result.productId);
+      assertEquals(1L, result.storeId);
+    }
   }
 
   @Test
@@ -119,7 +123,6 @@ public class AssociateWarehouseToProductInStoreUseCaseTest {
     // Already has 5 products
     when(warehouseRepository.findByBusinessUnitCode("MWH.001")).thenReturn(warehouse);
     when(productRepository.findById(1L)).thenReturn(product);
-    when(store.find("id", 1L)).thenReturn(store);
     when(associationRepository.countWarehousesForProductStore(1L, 1L)).thenReturn(0);
     when(associationRepository.countWarehousesForStore(1L)).thenReturn(2);
     when(associationRepository.findByStore(1L)).thenReturn(new ArrayList<>());
@@ -129,10 +132,14 @@ public class AssociateWarehouseToProductInStoreUseCaseTest {
     when(associationRepository.findByWarehouse("MWH.001")).thenReturn(existingAssocs);
 
     // When & Then
-    assertThrows(
-        WebApplicationException.class,
-        () -> useCase.associate("MWH.001", 1L, 1L),
-        "Should throw exception when max products for warehouse exceeded");
+    try (MockedStatic<Store> storeMock = mockStatic(Store.class)) {
+      storeMock.when(() -> Store.findById(1L)).thenReturn(store);
+      
+      assertThrows(
+          WebApplicationException.class,
+          () -> useCase.associate("MWH.001", 1L, 1L),
+          "Should throw exception when max products for warehouse exceeded");
+    }
   }
 
   @Test
@@ -150,14 +157,17 @@ public class AssociateWarehouseToProductInStoreUseCaseTest {
     // Already has 2 warehouses for this product/store
     when(warehouseRepository.findByBusinessUnitCode("MWH.001")).thenReturn(warehouse);
     when(productRepository.findById(1L)).thenReturn(product);
-    when(store.find("id", 1L)).thenReturn(store);
     when(associationRepository.countWarehousesForProductStore(1L, 1L)).thenReturn(2);
 
     // When & Then
-    assertThrows(
-        WebApplicationException.class,
-        () -> useCase.associate("MWH.001", 1L, 1L),
-        "Should throw exception when max warehouses for product/store exceeded");
+    try (MockedStatic<Store> storeMock = mockStatic(Store.class)) {
+      storeMock.when(() -> Store.findById(1L)).thenReturn(store);
+      
+      assertThrows(
+          WebApplicationException.class,
+          () -> useCase.associate("MWH.001", 1L, 1L),
+          "Should throw exception when max warehouses for product/store exceeded");
+    }
   }
 
   @Test
@@ -174,7 +184,6 @@ public class AssociateWarehouseToProductInStoreUseCaseTest {
 
     when(warehouseRepository.findByBusinessUnitCode("MWH.001")).thenReturn(warehouse);
     when(productRepository.findById(1L)).thenReturn(product);
-    when(store.find("id", 1L)).thenReturn(store);
     when(associationRepository.countWarehousesForProductStore(1L, 1L)).thenReturn(1);
     when(associationRepository.countWarehousesForStore(1L)).thenReturn(3);
 
@@ -182,9 +191,15 @@ public class AssociateWarehouseToProductInStoreUseCaseTest {
     when(associationRepository.findByStore(1L)).thenReturn(existingAssocs);
 
     // When & Then
-    assertThrows(
-        WebApplicationException.class,
-        () -> useCase.associate("MWH.001", 1L, 1L),
+    try (MockedStatic<Store> storeMock = mockStatic(Store.class)) {
+      storeMock.when(() -> Store.findById(1L)).thenReturn(store);
+      
+      assertThrows(
+          WebApplicationException.class,
+          () -> useCase.associate("MWH.001", 1L, 1L),
+          "Should throw exception when max warehouses for store exceeded");
+    }
+  }
         "Should throw exception when max warehouses for store exceeded");
   }
 }
