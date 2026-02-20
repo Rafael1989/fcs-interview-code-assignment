@@ -16,7 +16,7 @@ public class WarehouseProductStoreAssociationRepository
     dbAssociation.productId = association.productId;
     dbAssociation.storeId = association.storeId;
     dbAssociation.createdAt = LocalDateTime.now();
-    dbAssociation.persist();
+    this.persist(dbAssociation);
     return dbAssociation.toAssociation();
   }
 

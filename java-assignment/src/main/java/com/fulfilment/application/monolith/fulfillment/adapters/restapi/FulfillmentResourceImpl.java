@@ -52,7 +52,7 @@ public class FulfillmentResourceImpl {
     return associationRepository.findByWarehouse(warehouseCode).stream()
         .map(
             a ->
-                Map.of(
+                (Map<String, Object>) Map.of(
                     "id", a.id,
                     "warehouseBusinessUnitCode", a.warehouseBusinessUnitCode,
                     "productId", a.productId,
@@ -67,7 +67,7 @@ public class FulfillmentResourceImpl {
     return associationRepository.findByStore(storeId).stream()
         .map(
             a ->
-                Map.of(
+                (Map<String, Object>) Map.of(
                     "id", a.id,
                     "warehouseBusinessUnitCode", a.warehouseBusinessUnitCode,
                     "productId", a.productId,
@@ -83,7 +83,7 @@ public class FulfillmentResourceImpl {
     return associationRepository.findByProductAndStore(productId, storeId).stream()
         .map(
             a ->
-                Map.of(
+                (Map<String, Object>) Map.of(
                     "id", a.id,
                     "warehouseBusinessUnitCode", a.warehouseBusinessUnitCode,
                     "productId", a.productId,
