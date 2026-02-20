@@ -1,18 +1,21 @@
-# Instruções de Submissão
 
-## ✅ Checklist de Conclusão
+# Submission Instructions
 
-- [x] Task 1: Location - `LocationGateway.resolveByIdentifier()` implementado
-- [x] Task 2: Store - `StoreResource` com persistência antes de gateway
-- [x] Task 3: Warehouse - CRUD completo com validações
-- [x] BONUS: Associação Warehouse + Product + Store com 3 restrições
-- [x] QUESTIONS.md respondido (3 respostas)
-- [x] CASE_STUDY.md respondido (5 cenários)
-- [x] JUnit Tests implementados (20 testes)
-- [x] JaCoCo Code Coverage configurado (>=80%)
-- [x] Código sem erros de compilação
 
-## 📋 Estrutura do Projeto
+## ✅ Completion Checklist
+
+- [x] Task 1: Location - `LocationGateway.resolveByIdentifier()` implemented
+- [x] Task 2: Store - `StoreResource` with persistence before gateway
+- [x] Task 3: Warehouse - Full CRUD with validations
+- [x] BONUS: Warehouse + Product + Store association with 3 constraints
+- [x] QUESTIONS.md answered (3 responses)
+- [x] CASE_STUDY.md answered (5 scenarios)
+- [x] JUnit Tests implemented (20 tests)
+- [x] JaCoCo Code Coverage configured (>=80%)
+- [x] Code compiles without errors
+
+
+## 📋 Project Structure
 
 ```
 java-assignment/
@@ -68,27 +71,32 @@ java-assignment/
 │           ├── ReplaceWarehouseUseCaseTest.java ✅ (5 testes)
 │           └── fulfillment/domain/usecases/
 │               └── AssociateWarehouseToProductInStoreUseCaseTest.java ✅ (6 testes)
-├── pom.xml ✅ (com JaCoCo + dependencies)
-├── CODE_ASSIGNMENT.md ✅ (tarefas)
-├── QUESTIONS.md ✅ (3 perguntas respondidas)
-├── TESTING.md ✅ (documentação de testes)
-└── README.md ✅ (instruções)
+├── pom.xml ✅ (with JaCoCo + dependencies)
+├── CODE_ASSIGNMENT.md ✅ (tasks)
+├── QUESTIONS.md ✅ (3 questions answered)
+├── TESTING.md ✅ (test documentation)
+└── README.md ✅ (instructions)
 ```
 
-## 🚀 Como Submeter
 
-### 1. Preparar o repositório local
+## 🚀 How to Submit
+
+
+### 1. Prepare your local repository
 
 ```bash
 cd c:\Users\rrber\projetos\fcs-interview-code-assignment-main
 
-# Remover .env se houver
+
+# Remove .env if present
 rm -f .env.local
 
-# Adicionar todos os arquivos
+
+# Add all files
 git add .
 
-# Commit com mensagem descritiva
+
+# Commit with descriptive message
 git commit -m "feat: implement warehouse assignment with tests and coverage
 
 - Task 1: Location.resolveByIdentifier()
@@ -100,49 +108,55 @@ git commit -m "feat: implement warehouse assignment with tests and coverage
 - JaCoCo configured for CI/CD"
 ```
 
-### 2. Push para GitHub
+
+### 2. Push to GitHub
 
 ```bash
+
 # Push
 git push origin main
 
-# Ou se usar outro branch
-git push origin seu-branch-name
+# Or if using another branch
+git push origin your-branch-name
 ```
 
-### 3. Compartilhar Link
 
-Enviar para Hari/Shayal:
+### 3. Share the Link
+
+Send to Hari/Shayal:
 ```
-GitHub Repo: https://github.com/seu-usuario/seu-repo
-Branch: main (ou seu-branch)
-Status: Pronto para review
-Cobertura: 80%+
-Testes: 20 JUnit
+GitHub Repo: https://github.com/your-username/your-repo
+Branch: main (or your-branch)
+Status: Ready for review
+Coverage: 80%+
+Tests: 20 JUnit
 ```
 
-## 🧪 Validar Antes de Submeter
+
+## 🧪 Validate Before Submitting
 
 ```bash
-# 1. Limpar e compilar
+
+# 1. Clean and compile
 ./mvnw clean compile
 
-# 2. Rodar testes
+# 2. Run tests
 ./mvnw test
 
-# 3. Verificar cobertura
+# 3. Check coverage
 ./mvnw test jacoco:report
 
-# 4. Visualizar relatório
+# 4. View report
 open target/site/jacoco/index.html  # macOS
 start target/site/jacoco/index.html # Windows
 xdg-open target/site/jacoco/index.html # Linux
 
-# 5. Verificar se cobertura >= 80%
+# 5. Check if coverage >= 80%
 ./mvnw jacoco:check
 ```
 
-## 📊 Cobertura Esperada
+
+## 📊 Expected Coverage
 
 ```
 CreateWarehouseUseCase:        95%+ ✅
@@ -152,21 +166,23 @@ AssociateUseCase:              90%+ ✅
 Overall:                       80%+ ✅
 ```
 
-## ✍️ Respostas Documentadas
+
+## ✍️ Documented Answers
 
 ### QUESTIONS.md
-1. ✅ Estratégias de banco - refatoração para Repository Pattern
-2. ✅ OpenAPI vs código direto - análise de prós/contras
-3. ✅ Testes - estratégia de Teste Piramidal
+1. ✅ Database strategies - refactoring to Repository Pattern
+2. ✅ OpenAPI vs direct code - pros/cons analysis
+3. ✅ Testing - Pyramid Test Strategy
 
 ### CASE_STUDY.md
-1. ✅ Scenario 1: Cost Allocation - desafios e soluções
-2. ✅ Scenario 2: Cost Optimization - estratégias e priorização
-3. ✅ Scenario 3: Financial Integration - importância e implementação
-4. ✅ Scenario 4: Budgeting & Forecasting - design e considerações
-5. ✅ Scenario 5: Warehouse Replacement - cost control e histórico
+1. ✅ Scenario 1: Cost Allocation - challenges and solutions
+2. ✅ Scenario 2: Cost Optimization - strategies and prioritization
+3. ✅ Scenario 3: Financial Integration - importance and implementation
+4. ✅ Scenario 4: Budgeting & Forecasting - design and considerations
+5. ✅ Scenario 5: Warehouse Replacement - cost control and history
 
-## 📦 Dependências Adicionadas
+
+## 📦 Additional Dependencies
 
 ```xml
 <!-- Testing -->
@@ -191,25 +207,26 @@ Overall:                       80%+ ✅
 </plugin>
 ```
 
-## 🎯 Pontos de Avaliação
 
-- ✅ **Código**: Implementação correta de todos os requisitos
-- ✅ **Tests**: 20 testes JUnit cobrindo sucesso + falhas
+## 🎯 Evaluation Points
+
+- ✅ **Code**: Correct implementation of all requirements
+- ✅ **Tests**: 20 JUnit tests covering success + failures
 - ✅ **Coverage**: >=80% JaCoCo
-- ✅ **Documentação**: CODE_ASSIGNMENT + QUESTIONS + CASE_STUDY completos
-- ✅ **Boas Práticas**: 
-  - Clean code
-  - Exception handling
-  - Design patterns (Repository, Use Case)
-  - Logging (onde apropriado)
-  - Validações de negócio
-  
-## ⏰ Data Limite
+- ✅ **Documentation**: CODE_ASSIGNMENT + QUESTIONS + CASE_STUDY complete
+- ✅ **Best Practices**:
+    - Clean code
+    - Exception handling
+    - Design patterns (Repository, Use Case)
+    - Logging (where appropriate)
+    - Business validations
 
-**Seg, 23 de Fevereiro - EoD**
+## ⏰ Deadline
+
+**Mon, February 23 - EoD**
 
 ---
 
-**Status**: ✅ PRONTO PARA SUBMISSÃO
+**Status**: ✅ READY FOR SUBMISSION
 
-Qualquer dúvida → Contatar Hari/Shayal
+Any questions → Contact Hari/Shayal
