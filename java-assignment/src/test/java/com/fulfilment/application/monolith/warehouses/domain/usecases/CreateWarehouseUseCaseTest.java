@@ -39,6 +39,8 @@ public class CreateWarehouseUseCaseTest {
     Location location = new Location("AMSTERDAM-001", 5, 100);
 
     when(locationGateway.resolveByIdentifier("AMSTERDAM-001")).thenReturn(location);
+    when(warehouseStore.findByBusinessUnitCode("NEW-001"))
+        .thenThrow(new IllegalArgumentException("Warehouse not found: NEW-001"));
     when(warehouseStore.getAll()).thenReturn(java.util.List.of());
     doNothing().when(warehouseStore).create(any());
 
