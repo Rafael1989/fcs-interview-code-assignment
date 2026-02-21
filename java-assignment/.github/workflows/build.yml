@@ -36,8 +36,7 @@ jobs:
         files: ./java-assignment/target/site/jacoco/jacoco.xml
         flags: unittests
         name: codecov-umbrella
-        fail_ci_if_error: true
-        token: ${{ secrets.CODECOV_TOKEN }}
+        fail_ci_if_error: false
 
     - name: Upload Test Results
       if: always()
