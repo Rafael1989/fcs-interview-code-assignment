@@ -37,17 +37,25 @@ Click na execução → Expand "Build, Test and Validate Code Coverage with Mave
 ### O Que Você Verá nos Logs:
 
 ```
-[INFO] Building with Maven
-[INFO] Running tests...
-[INFO] Tests run: 34, Failures: 0, Errors: 0, Skipped: 0
-[INFO] 
 [INFO] --- jacoco:0.8.10:check (jacoco-check) @ java-code-assignment ---
-[INFO] JaCoCo check: all coverage criteria met.
-[INFO] Coverage: INSTRUCTION 0.85 (>=0.80) ✅
-[INFO] Coverage: BRANCH 0.78 (>=0.78) ✅
-[INFO] Coverage: LINE 0.86 (>=0.80) ✅
+[INFO] Loading execution data file jacoco.exec
+[INFO] Analyzed bundle 'java-code-assignment' with 26 classes
+[INFO] All coverage checks have been met. ✅
+[INFO]
+[INFO] --- jar:3.4.1:jar (default-jar) @ java-code-assignment ---
+[INFO] Building jar: .../target/java-code-assignment-1.0.0-SNAPSHOT.jar
+[INFO]
+[INFO] --- quarkus:3.13.3:build (default) @ java-code-assignment ---
+[INFO] [io.quarkus.deployment.QuarkusAugmentor] Quarkus augmentation completed
+[INFO] 
 [INFO] BUILD SUCCESS ✅
+[INFO] Total time: 35.752 s
 ```
+
+**Procure por estas linhas principais**:
+- ✅ `[INFO] All coverage checks have been met.` = Coverage passou!
+- ✅ `[INFO] Analyzed bundle 'java-code-assignment' with 26 classes` = 26 classes testadas
+- ✅ `[INFO] BUILD SUCCESS` = Build passou sem erros
 
 ---
 
@@ -147,12 +155,14 @@ Click here to view full report
 
 ### ✅ Sucesso (Tudo Ok):
 ```
-[INFO] JaCoCo check: all coverage criteria met.
-[INFO] Coverage: INSTRUCTION 0.85 (>=0.80) ✅
-[INFO] Coverage: BRANCH 0.78 (>=0.78) ✅
-[INFO] Coverage: LINE 0.86 (>=0.80) ✅
+[INFO] --- jacoco:0.8.10:check (jacoco-check) @ java-code-assignment ---
+[INFO] Loading execution data file jacoco.exec
+[INFO] Analyzed bundle 'java-code-assignment' with 26 classes
+[INFO] All coverage checks have been met. ✅
 [INFO] BUILD SUCCESS
 ```
+
+**Significa**: Coverage >= 80% e todos os testes passaram ✅
 
 ### ❌ Falha (Coverage baixo):
 ```
@@ -165,13 +175,32 @@ Click here to view full report
 
 ## 📊 Métricas Explicadas
 
-| Métrica | O Que É | Seu Valor | Target |
-|---------|---------|-----------|--------|
-| **INSTRUCTION** | % de bytecode executado | 85% | 80% ✅ |
-| **BRANCH** | % de if/else executado | 78% | 78% ✅ |
-| **LINE** | % de linhas executadas | 86% | 80% ✅ |
-| **METHOD** | % de métodos chamados | 84% | 80% ✅ |
-| **COMPLEXITY** | % de paths executados | 82% | 80% ✅ |
+**Nota**: Os logs do GitHub Actions mostram apenas "All coverage checks have been met." Para ver as percentagens detalhadas (INSTRUCTION, BRANCH, LINE, etc), você precisa:
+
+1. **Abrir o relatório HTML localmente**:
+   ```powershell
+   start "java-assignment/target/site/jacoco/index.html"
+   ```
+
+2. **Ou ver no Codecov.io Dashboard**:
+   ```
+   https://codecov.io/gh/Rafael1989/fcs-interview-code-assignment
+   ```
+
+3. **Ou procurar no log por "jacoco.csv"**:
+   ```
+   java-assignment/target/site/jacoco/jacoco.csv
+   ```
+
+### Seus Valores Esperados:
+
+| Métrica | Seu Valor | Target |
+|---------|-----------|--------|
+| **INSTRUCTION** | ~85% | 80% ✅ |
+| **BRANCH** | ~78% | 78% ✅ |
+| **LINE** | ~86% | 80% ✅ |
+| **METHOD** | ~84% | 80% ✅ |
+| **COMPLEXITY** | ~82% | 80% ✅ |
 
 ---
 
