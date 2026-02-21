@@ -52,6 +52,16 @@ public class ProductResource {
       throw new WebApplicationException("Id was invalidly set on request.", 422);
     }
 
+    if (product.name == null || product.name.trim().isEmpty()) {
+      throw new WebApplicationException("Product Name was not set on request.", 422);
+    }
+
+    // Check if product with the same name already exists
+    Product existingProduct = productRepository.find("name", product.name).firstResult();
+    if (existingProduct != null) {
+      throw new WebApplicationException("Product with name '" + product.name + "' already exists.", 409);
+    }
+
     productRepository.persist(product);
     return Response.ok(product).status(201).build();
   }
@@ -68,6 +78,14 @@ public class ProductResource {
 
     if (entity == null) {
       throw new WebApplicationException("Product with id of " + id + " does not exist.", 404);
+    }
+
+    // Check if product with the same name already exists (but not the current product)
+    if (!entity.name.equals(product.name)) {
+      Product existingProduct = productRepository.find("name", product.name).firstResult();
+      if (existingProduct != null) {
+        throw new WebApplicationException("Product with name '" + product.name + "' already exists.", 409);
+      }
     }
 
     entity.name = product.name;
