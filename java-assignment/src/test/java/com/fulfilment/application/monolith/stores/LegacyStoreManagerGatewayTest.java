@@ -3,6 +3,7 @@ package com.fulfilment.application.monolith.stores;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -12,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Unit tests for LegacyStoreManagerGateway
  *
  * Tests the integration point where Store changes are propagated to legacy systems
+ * NOTE: These tests execute REAL code (not mocked) to ensure proper code coverage
  */
 @QuarkusTest
 class LegacyStoreManagerGatewayTest {
@@ -29,6 +31,12 @@ class LegacyStoreManagerGatewayTest {
     testStore.name = "TestStore_" + System.currentTimeMillis();
     testStore.quantityProductsInStock = 100;
     testStore.persist();
+  }
+
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    Store.deleteAll();
   }
 
   @Test
@@ -95,6 +103,22 @@ class LegacyStoreManagerGatewayTest {
     // Verify final state
     Store retrieved = Store.findById(testStore.id);
     assertEquals(125, retrieved.quantityProductsInStock);
+  }
+
+  @Test
+  void testCreateStoreOnLegacySystemWithNullShouldThrow() {
+    // Test null validation
+    assertThrows(IllegalArgumentException.class, () -> {
+      gateway.createStoreOnLegacySystem(null);
+    }, "Should throw IllegalArgumentException when store is null");
+  }
+
+  @Test
+  void testUpdateStoreOnLegacySystemWithNullShouldThrow() {
+    // Test null validation
+    assertThrows(IllegalArgumentException.class, () -> {
+      gateway.updateStoreOnLegacySystem(null);
+    }, "Should throw IllegalArgumentException when store is null");
   }
 }
 

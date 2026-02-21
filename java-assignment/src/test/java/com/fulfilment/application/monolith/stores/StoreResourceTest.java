@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 @QuarkusTest
 class StoreResourceTest {
@@ -24,8 +23,7 @@ class StoreResourceTest {
     void setup() {
         // Clear all stores before each test
         Store.deleteAll();
-        // Mock the legacy gateway
-        resource.legacyStoreManagerGateway = mock(LegacyStoreManagerGateway.class);
+        // NOTE: NOT mocking legacyStoreManagerGateway to ensure real code execution for coverage
     }
 
     @Test
