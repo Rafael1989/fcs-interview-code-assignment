@@ -24,21 +24,19 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
-    - name: Build with Maven
+    - name: Build, Test and Validate Code Coverage with Maven
       run: mvn clean verify -B
       working-directory: ./java-assignment
+      # Note: mvn verify includes:
+      #   - Compilation
+      #   - Unit tests execution
+      #   - JaCoCo coverage report generation
+      #   - JaCoCo check validation (80%+ minimum enforced by pom.xml configuration)
 
-    - name: Run tests
-      run: mvn test -B
-      working-directory: ./java-assignment
-
-    - name: Validate code coverage (80%+ required)
-      run: mvn jacoco:check -B
-      working-directory: ./java-assignment
-
-    - name: Generate JaCoCo coverage report
+    - name: Generate JaCoCo coverage report (additional)
       run: mvn jacoco:report -B
       working-directory: ./java-assignment
+      continue-on-error: true
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
