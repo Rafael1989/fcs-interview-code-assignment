@@ -9,6 +9,7 @@ import com.warehouse.api.beans.Warehouse;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.WebApplicationException;
 import java.util.List;
 
 @RequestScoped
@@ -54,12 +55,18 @@ public class WarehouseResourceImpl implements WarehouseResource {
   @Override
   public Warehouse getAWarehouseUnitByID(String id) {
     var warehouse = warehouseRepository.findByBusinessUnitCode(id);
+    if (warehouse == null) {
+      throw new WebApplicationException("Warehouse with id " + id + " does not exist.", 404);
+    }
     return toWarehouseResponse(warehouse);
   }
 
   @Override
   public void archiveAWarehouseUnitByID(String id) {
     var warehouse = warehouseRepository.findByBusinessUnitCode(id);
+    if (warehouse == null) {
+      throw new WebApplicationException("Warehouse with id " + id + " does not exist.", 404);
+    }
     archiveWarehouseUseCase.archive(warehouse);
   }
 

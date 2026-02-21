@@ -121,6 +121,19 @@ public class WarehouseResourceImplTest {
   }
 
   @Test
+  void testGetAWarehouseUnitByIDNotFound() {
+    // Given
+    when(warehouseRepository.findByBusinessUnitCode("INVALID")).thenReturn(null);
+
+    // When & Then
+    jakarta.ws.rs.WebApplicationException ex =
+        assertThrows(
+            jakarta.ws.rs.WebApplicationException.class,
+            () -> resource.getAWarehouseUnitByID("INVALID"));
+    assertEquals(404, ex.getResponse().getStatus());
+  }
+
+  @Test
   void testArchiveAWarehouseUnitByID() {
     // Given
     Warehouse warehouse = new Warehouse();
@@ -138,6 +151,19 @@ public class WarehouseResourceImplTest {
     // Then
     verify(warehouseRepository).findByBusinessUnitCode("WH-001");
     verify(archiveWarehouseUseCase).archive(warehouse);
+  }
+
+  @Test
+  void testArchiveAWarehouseUnitByIDNotFound() {
+    // Given
+    when(warehouseRepository.findByBusinessUnitCode("INVALID")).thenReturn(null);
+
+    // When & Then
+    jakarta.ws.rs.WebApplicationException ex =
+        assertThrows(
+            jakarta.ws.rs.WebApplicationException.class,
+            () -> resource.archiveAWarehouseUnitByID("INVALID"));
+    assertEquals(404, ex.getResponse().getStatus());
   }
 
   @Test
