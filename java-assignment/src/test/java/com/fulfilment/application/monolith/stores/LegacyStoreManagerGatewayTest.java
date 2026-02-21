@@ -49,13 +49,16 @@ class LegacyStoreManagerGatewayTest {
   @Test
   @Transactional
   void testUpdateStoreOnLegacySystem() {
-    // Update test store
-    testStore.quantityProductsInStock = 50;
-    testStore.persist();
+    // Fetch fresh instance from database
+    Store freshStore = Store.findById(testStore.id);
+    assertNotNull(freshStore);
+
+    // Update fresh store
+    freshStore.quantityProductsInStock = 50;
 
     // This method should not throw any exception
     assertDoesNotThrow(() -> {
-      gateway.updateStoreOnLegacySystem(testStore);
+      gateway.updateStoreOnLegacySystem(freshStore);
     }, "updateStoreOnLegacySystem should handle store updates");
   }
 
@@ -79,15 +82,15 @@ class LegacyStoreManagerGatewayTest {
   @Test
   @Transactional
   void testUpdateStoreOnLegacySystemMultipleTimes() {
-    // First update
-    testStore.quantityProductsInStock = 75;
-    testStore.persist();
-    assertDoesNotThrow(() -> gateway.updateStoreOnLegacySystem(testStore));
+    // First update - fetch fresh instance
+    Store freshStore1 = Store.findById(testStore.id);
+    freshStore1.quantityProductsInStock = 75;
+    assertDoesNotThrow(() -> gateway.updateStoreOnLegacySystem(freshStore1));
 
-    // Second update
-    testStore.quantityProductsInStock = 125;
-    testStore.persist();
-    assertDoesNotThrow(() -> gateway.updateStoreOnLegacySystem(testStore));
+    // Second update - fetch fresh instance again
+    Store freshStore2 = Store.findById(testStore.id);
+    freshStore2.quantityProductsInStock = 125;
+    assertDoesNotThrow(() -> gateway.updateStoreOnLegacySystem(freshStore2));
 
     // Verify final state
     Store retrieved = Store.findById(testStore.id);
