@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Monitoring Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .timestamp {
+            text-align: right;
+            color: white;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .card h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .metric {
+            margin-bottom: 15px;
+        }
+
+        .metric-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .metric-value {
+            color: #333;
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+
+        .metric-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .metric-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .status {
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-weight: 500;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .status.up {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status.down {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .charts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .chart-title {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        canvas {
+            max-height: 300px;
+        }
+
+        .controls {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        button {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        button:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .refresh-indicator {
+            display: inline-block;
+            margin-left: 10px;
+            font-size: 0.8em;
+            color: #999;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            .charts {
+                grid-template-columns: 1fr;
+            }
+
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .memory-gauge {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .gauge {
+            width: 80%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .gauge-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #ffc107, #dc3545);
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 System Monitoring Dashboard</h1>
+            <p>Real-time system metrics and performance monitoring</p>
+        </div>
+
+        <div class="timestamp">
+            Last Updated: <span id="lastUpdate">-</span>
+            <span class="refresh-indicator">
+                <span class="spinner" id="spinner" style="display:none;"></span>
+                Auto-refresh every 5 seconds
+            </span>
+        </div>
+
+        <div id="errorContainer"></div>
+
+        <div class="dashboard">
+            <!-- CPU Card -->
+            <div class="card">
+                <h2>🔧 CPU</h2>
+                <div class="metric">
+                    <div class="metric-label">Process CPU Usage</div>
+                    <div class="metric-value" id="cpuProcess">-</div>
+                    <div class="metric-bar">
+                        <div class="metric-bar-fill" id="cpuProcessBar" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">System CPU Usage</div>
+                    <div class="metric-value" id="cpuSystem">-</div>
+                    <div class="metric-bar">
+                        <div class="metric-bar-fill" id="cpuSystemBar" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Available Processors</div>
+                    <div class="metric-value" id="cpuProcessors">-</div>
+                </div>
+            </div>
+
+            <!-- Heap Memory Card -->
+            <div class="card">
+                <h2>💾 Heap Memory</h2>
+                <div class="metric">
+                    <div class="metric-label">Used</div>
+                    <div class="metric-value" id="heapUsed">-</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Max Capacity</div>
+                    <div class="metric-value" id="heapMax">-</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Usage Percentage</div>
+                    <div class="metric-value" id="heapPercent">-</div>
+                    <div class="metric-bar">
+                        <div class="metric-bar-fill" id="heapBar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Threads Card -->
+            <div class="card">
+                <h2>🧵 Threads</h2>
+                <div class="metric">
+                    <div class="metric-label">Active Threads</div>
+                    <div class="metric-value" id="threadsActive">-</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Peak Threads</div>
+                    <div class="metric-value" id="threadsPeak">-</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Total Started</div>
+                    <div class="metric-value" id="threadsTotal">-</div>
+                </div>
+            </div>
+
+            <!-- Health Status Card -->
+            <div class="card">
+                <h2>❤️ Health Status</h2>
+                <div id="healthStatus" class="status up">Checking...</div>
+                <div id="healthDetails" style="margin-top: 15px; font-size: 0.9em;"></div>
+            </div>
+
+            <!-- Runtime Memory Card -->
+            <div class="card">
+                <h2>⚙️ Runtime Memory</h2>
+                <div class="metric">
+                    <div class="metric-label">Free Memory</div>
+                    <div class="metric-value" id="runtimeFree">-</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Total Memory</div>
+                    <div class="metric-value" id="runtimeTotal">-</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Max Memory</div>
+                    <div class="metric-value" id="runtimeMax">-</div>
+                </div>
+            </div>
+
+            <!-- Non-Heap Memory Card -->
+            <div class="card">
+                <h2>📦 Non-Heap Memory</h2>
+                <div class="metric">
+                    <div class="metric-label">Used</div>
+                    <div class="metric-value" id="nonHeapUsed">-</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Max</div>
+                    <div class="metric-value" id="nonHeapMax">-</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button onclick="refreshMetrics()">🔄 Refresh Now</button>
+            <button onclick="toggleAutoRefresh()" id="toggleBtn">⏸️ Pause Auto-Refresh</button>
+        </div>
+    </div>
+
+    <script>
+        let autoRefreshEnabled = true;
+        let cpuData = [];
+        let memoryData = [];
+        let timestamps = [];
+        const maxDataPoints = 12;
+
+        // Initialize charts
+        const cpuCtx = document.createElement('canvas');
+        const memoryCtx = document.createElement('canvas');
+
+        let cpuChart, memoryChart;
+
+        async function fetchMetrics() {
+            try {
+                document.getElementById('spinner').style.display = 'inline-block';
+                const response = await fetch('/monitoring/metrics');
+                const data = await response.json();
+
+                if (data.error) {
+                    showError(data.error);
+                    return;
+                }
+
+                updateDashboard(data);
+                updateCharts(data);
+                updateTimestamp();
+                clearError();
+            } catch (error) {
+                showError(`Failed to fetch metrics: ${error.message}`);
+            } finally {
+                document.getElementById('spinner').style.display = 'none';
+            }
+        }
+
+        async function fetchHealth() {
+            try {
+                const response = await fetch('/monitoring/health');
+                const data = await response.json();
+                updateHealthStatus(data);
+            } catch (error) {
+                console.error('Failed to fetch health:', error);
+            }
+        }
+
+        function updateDashboard(data) {
+            // CPU Metrics
+            const cpuProcess = parseFloat(data.cpu.processUsage);
+            const cpuSystem = parseFloat(data.cpu.systemUsage);
+
+            document.getElementById('cpuProcess').textContent = data.cpu.processUsage;
+            document.getElementById('cpuProcessBar').style.width = Math.min(cpuProcess, 100) + '%';
+
+            document.getElementById('cpuSystem').textContent = data.cpu.systemUsage;
+            document.getElementById('cpuSystemBar').style.width = Math.min(cpuSystem, 100) + '%';
+
+            document.getElementById('cpuProcessors').textContent = data.cpu.availableProcessors;
+
+            // Heap Memory
+            document.getElementById('heapUsed').textContent = data.heapMemory.used;
+            document.getElementById('heapMax').textContent = data.heapMemory.max;
+            document.getElementById('heapPercent').textContent = data.heapMemory.usagePercent;
+
+            const heapPercent = parseFloat(data.heapMemory.usagePercent);
+            document.getElementById('heapBar').style.width = heapPercent + '%';
+
+            // Threads
+            document.getElementById('threadsActive').textContent = data.threads.active;
+            document.getElementById('threadsPeak').textContent = data.threads.peak;
+            document.getElementById('threadsTotal').textContent = data.threads.totalStarted;
+
+            // Runtime Memory
+            document.getElementById('runtimeFree').textContent = data.runtime.freeMemory;
+            document.getElementById('runtimeTotal').textContent = data.runtime.totalMemory;
+            document.getElementById('runtimeMax').textContent = data.runtime.maxMemory;
+
+            // Non-Heap Memory
+            document.getElementById('nonHeapUsed').textContent = data.nonHeapMemory.used;
+            document.getElementById('nonHeapMax').textContent = data.nonHeapMemory.max;
+
+            // Store data for charts
+            const now = new Date().toLocaleTimeString();
+            cpuData.push(cpuProcess);
+            memoryData.push(heapPercent);
+            timestamps.push(now);
+
+            if (timestamps.length > maxDataPoints) {
+                cpuData.shift();
+                memoryData.shift();
+                timestamps.shift();
+            }
+        }
+
+        function updateHealthStatus(data) {
+            const statusEl = document.getElementById('healthStatus');
+            statusEl.textContent = `Status: ${data.status}`;
+            statusEl.className = `status ${data.status.toLowerCase()}`;
+
+            if (data.details) {
+                const detailsEl = document.getElementById('healthDetails');
+                let detailsHtml = '';
+                for (const [key, value] of Object.entries(data.details)) {
+                    detailsHtml += `<div><strong>${key}:</strong> ${value}</div>`;
+                }
+                detailsEl.innerHTML = detailsHtml;
+            }
+        }
+
+        function updateTimestamp() {
+            const now = new Date();
+            document.getElementById('lastUpdate').textContent = now.toLocaleString();
+        }
+
+        function updateCharts(data) {
+            // Create charts if they don't exist
+            if (!cpuChart) {
+                const chartsDiv = document.querySelector('.charts');
+
+                const cpuChartDiv = document.createElement('div');
+                cpuChartDiv.className = 'chart-container';
+                cpuChartDiv.innerHTML = '<h3 class="chart-title">CPU Usage Over Time</h3><canvas id="cpuChart"></canvas>';
+                chartsDiv.appendChild(cpuChartDiv);
+
+                const memoryChartDiv = document.createElement('div');
+                memoryChartDiv.className = 'chart-container';
+                memoryChartDiv.innerHTML = '<h3 class="chart-title">Heap Memory Usage Over Time</h3><canvas id="memoryChart"></canvas>';
+                chartsDiv.appendChild(memoryChartDiv);
+
+                const cpuCtx = document.getElementById('cpuChart').getContext('2d');
+                cpuChart = new Chart(cpuCtx, {
+                    type: 'line',
+                    data: {
+                        labels: timestamps,
+                        datasets: [{
+                            label: 'CPU Usage (%)',
+                            data: cpuData,
+                            borderColor: '#667eea',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#667eea'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                ticks: { color: '#666' },
+                                grid: { color: '#eee' }
+                            },
+                            x: {
+                                ticks: { color: '#666' },
+                                grid: { color: '#eee' }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                labels: { color: '#666', font: { size: 12 } }
+                            }
+                        }
+                    }
+                });
+
+                const memoryCtx = document.getElementById('memoryChart').getContext('2d');
+                memoryChart = new Chart(memoryCtx, {
+                    type: 'line',
+                    data: {
+                        labels: timestamps,
+                        datasets: [{
+                            label: 'Heap Memory Usage (%)',
+                            data: memoryData,
+                            borderColor: '#764ba2',
+                            backgroundColor: 'rgba(118, 75, 162, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#764ba2'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                ticks: { color: '#666' },
+                                grid: { color: '#eee' }
+                            },
+                            x: {
+                                ticks: { color: '#666' },
+                                grid: { color: '#eee' }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                labels: { color: '#666', font: { size: 12 } }
+                            }
+                        }
+                    }
+                });
+            } else {
+                cpuChart.data.labels = timestamps;
+                cpuChart.data.datasets[0].data = cpuData;
+                cpuChart.update();
+
+                memoryChart.data.labels = timestamps;
+                memoryChart.data.datasets[0].data = memoryData;
+                memoryChart.update();
+            }
+        }
+
+        function refreshMetrics() {
+            fetchMetrics();
+            fetchHealth();
+        }
+
+        function toggleAutoRefresh() {
+            autoRefreshEnabled = !autoRefreshEnabled;
+            const btn = document.getElementById('toggleBtn');
+            btn.textContent = autoRefreshEnabled ? '⏸️ Pause Auto-Refresh' : '▶️ Resume Auto-Refresh';
+        }
+
+        function showError(message) {
+            const errorContainer = document.getElementById('errorContainer');
+            errorContainer.innerHTML = `<div class="error">❌ ${message}</div>`;
+        }
+
+        function clearError() {
+            document.getElementById('errorContainer').innerHTML = '';
+        }
+
+        // Initial load
+        refreshMetrics();
+
+        // Auto-refresh every 5 seconds
+        setInterval(() => {
+            if (autoRefreshEnabled) {
+                refreshMetrics();
+            }
+        }, 5000);
+    </script>
+</body>
+</html>
+
