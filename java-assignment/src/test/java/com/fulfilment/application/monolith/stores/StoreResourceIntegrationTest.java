@@ -32,7 +32,6 @@ class StoreResourceIntegrationTest {
     }
 
     @Test
-    @Transactional
     void testCreateStoreEndpoint() {
         String storeName = "IntegrationStore_" + System.currentTimeMillis();
 
@@ -47,18 +46,26 @@ class StoreResourceIntegrationTest {
     }
 
     @Test
-    @Transactional
     void testGetSingleStoreEndpoint() {
-        // Create store first
-        Store store = new Store("GetSingle_" + System.currentTimeMillis(), 50);
-        store.persist();
+        // Create store via REST API first
+        String storeName = "GetSingle_" + System.currentTimeMillis();
+
+        String response = given()
+            .contentType(ContentType.JSON)
+            .body("{\"name\":\"" + storeName + "\",\"quantityProductsInStock\":50}")
+            .when().post("/store")
+            .then()
+            .statusCode(201)
+            .extract().path("id").toString();
+
+        Long storeId = Long.parseLong(response);
 
         given()
-            .when().get("/store/" + store.id)
+            .when().get("/store/" + storeId)
             .then()
             .statusCode(200)
-            .body("id", equalTo(store.id.intValue()))
-            .body("name", equalTo(store.name))
+            .body("id", equalTo(storeId.intValue()))
+            .body("name", equalTo(storeName))
             .body("quantityProductsInStock", equalTo(50));
     }
 
@@ -71,18 +78,26 @@ class StoreResourceIntegrationTest {
     }
 
     @Test
-    @Transactional
     void testUpdateStoreEndpoint() {
-        // Create store first
-        Store store = new Store("UpdateTest_" + System.currentTimeMillis(), 50);
-        store.persist();
+        // Create store via REST API first
+        String storeName = "UpdateTest_" + System.currentTimeMillis();
+
+        String response = given()
+            .contentType(ContentType.JSON)
+            .body("{\"name\":\"" + storeName + "\",\"quantityProductsInStock\":50}")
+            .when().post("/store")
+            .then()
+            .statusCode(201)
+            .extract().path("id").toString();
+
+        Long storeId = Long.parseLong(response);
 
         String newName = "Updated_" + System.currentTimeMillis();
 
         given()
             .contentType(ContentType.JSON)
             .body("{\"name\":\"" + newName + "\",\"quantityProductsInStock\":150}")
-            .when().put("/store/" + store.id)
+            .when().put("/store/" + storeId)
             .then()
             .statusCode(200)
             .body("name", equalTo(newName))
@@ -90,18 +105,26 @@ class StoreResourceIntegrationTest {
     }
 
     @Test
-    @Transactional
     void testPatchStoreEndpoint() {
-        // Create store first
-        Store store = new Store("PatchTest_" + System.currentTimeMillis(), 50);
-        store.persist();
+        // Create store via REST API first
+        String storeName = "PatchTest_" + System.currentTimeMillis();
+
+        String response = given()
+            .contentType(ContentType.JSON)
+            .body("{\"name\":\"" + storeName + "\",\"quantityProductsInStock\":50}")
+            .when().post("/store")
+            .then()
+            .statusCode(201)
+            .extract().path("id").toString();
+
+        Long storeId = Long.parseLong(response);
 
         String newName = "Patched_" + System.currentTimeMillis();
 
         given()
             .contentType(ContentType.JSON)
             .body("{\"name\":\"" + newName + "\",\"quantityProductsInStock\":200}")
-            .when().patch("/store/" + store.id)
+            .when().patch("/store/" + storeId)
             .then()
             .statusCode(200)
             .body("name", equalTo(newName))
@@ -109,20 +132,28 @@ class StoreResourceIntegrationTest {
     }
 
     @Test
-    @Transactional
     void testDeleteStoreEndpoint() {
-        // Create store first
-        Store store = new Store("DeleteTest_" + System.currentTimeMillis(), 50);
-        store.persist();
+        // Create store via REST API first
+        String storeName = "DeleteTest_" + System.currentTimeMillis();
+
+        String response = given()
+            .contentType(ContentType.JSON)
+            .body("{\"name\":\"" + storeName + "\",\"quantityProductsInStock\":50}")
+            .when().post("/store")
+            .then()
+            .statusCode(201)
+            .extract().path("id").toString();
+
+        Long storeId = Long.parseLong(response);
 
         given()
-            .when().delete("/store/" + store.id)
+            .when().delete("/store/" + storeId)
             .then()
             .statusCode(204);
 
         // Verify it's deleted
         given()
-            .when().get("/store/" + store.id)
+            .when().get("/store/" + storeId)
             .then()
             .statusCode(404);
     }
