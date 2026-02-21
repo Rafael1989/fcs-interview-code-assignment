@@ -3,9 +3,11 @@ package com.fulfilment.application.monolith.location;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.fulfilment.application.monolith.warehouses.domain.models.Location;
+import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+@QuarkusTest
 public class LocationGatewayTest {
 
   private LocationGateway locationGateway;

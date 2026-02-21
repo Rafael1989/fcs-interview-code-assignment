@@ -5,7 +5,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 
-public class WarehouseProductStoreAssociationTest {
+/**
+ * Unit tests for WarehouseProductStoreAssociation model
+ * Tests all fields and constructors to ensure 100% code coverage
+ */
+class WarehouseProductStoreAssociationTest {
 
   @Test
   void testAssociationDefaultFields() {

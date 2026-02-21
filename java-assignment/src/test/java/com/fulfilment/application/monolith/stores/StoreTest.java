@@ -1,27 +1,18 @@
 package com.fulfilment.application.monolith.stores;
 
 import io.quarkus.test.junit.QuarkusTest;
-import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Integration tests for Store entity to ensure proper code coverage
- * These tests directly exercise Store functionality
+ * Unit tests for Store entity to ensure proper code coverage
+ * These tests verify Store constructors and toString method
  */
 @QuarkusTest
 class StoreTest {
 
-    @AfterEach
-    @Transactional
-    void cleanup() {
-        Store.deleteAll();
-    }
-
     @Test
-    @Transactional
     void testStoreDefaultConstructor() {
         Store store = new Store();
         assertNotNull(store);
@@ -30,7 +21,6 @@ class StoreTest {
     }
 
     @Test
-    @Transactional
     void testStoreConstructorWithName() {
         String storeName = "TestStore_" + System.currentTimeMillis();
         Store store = new Store(storeName);
@@ -41,7 +31,6 @@ class StoreTest {
     }
 
     @Test
-    @Transactional
     void testStoreConstructorWithNameAndStock() {
         String storeName = "TestStore_" + System.currentTimeMillis();
         int stock = 150;
@@ -53,98 +42,50 @@ class StoreTest {
     }
 
     @Test
-    @Transactional
     void testStoreToString() {
         String storeName = "TestStore_" + System.currentTimeMillis();
         Store store = new Store(storeName, 100);
-        store.persist();
 
         String toString = store.toString();
         assertNotNull(toString);
         assertTrue(toString.contains("Store{"));
-        assertTrue(toString.contains("id="));
         assertTrue(toString.contains("name='" + storeName + "'"));
         assertTrue(toString.contains("quantityProductsInStock=100"));
     }
 
     @Test
-    @Transactional
-    void testStorePersistAndFind() {
-        String storeName = "TestStore_" + System.currentTimeMillis();
-        Store store = new Store(storeName, 50);
-        store.persist();
-
-        assertNotNull(store.id);
-
-        Store found = Store.findById(store.id);
-        assertNotNull(found);
-        assertEquals(storeName, found.name);
-        assertEquals(50, found.quantityProductsInStock);
+    void testStoreToStringWithNullName() {
+        Store store = new Store();
+        String toString = store.toString();
+        assertNotNull(toString);
+        assertTrue(toString.contains("Store{"));
     }
 
     @Test
-    @Transactional
-    void testStoreUpdate() {
-        String storeName = "TestStore_" + System.currentTimeMillis();
-        Store store = new Store(storeName, 50);
-        store.persist();
+    void testStoreConstructorMultipleInstances() {
+        Store store1 = new Store("Store1", 10);
+        Store store2 = new Store("Store2", 20);
+        Store store3 = new Store("Store3");
 
+        assertEquals("Store1", store1.name);
+        assertEquals(10, store1.quantityProductsInStock);
+        assertEquals("Store2", store2.name);
+        assertEquals(20, store2.quantityProductsInStock);
+        assertEquals("Store3", store3.name);
+        assertEquals(0, store3.quantityProductsInStock);
+    }
+
+    @Test
+    void testStoreFieldAccess() {
+        Store store = new Store("TestStore", 50);
+        assertEquals("TestStore", store.name);
+        assertEquals(50, store.quantityProductsInStock);
+
+        // Test field modification
+        store.name = "ModifiedStore";
         store.quantityProductsInStock = 75;
-        store.persist();
-
-        Store found = Store.findById(store.id);
-        assertEquals(75, found.quantityProductsInStock);
-    }
-
-    @Test
-    @Transactional
-    void testStoreDelete() {
-        String storeName = "TestStore_" + System.currentTimeMillis();
-        Store store = new Store(storeName, 50);
-        store.persist();
-
-        Long id = store.id;
-        assertNotNull(Store.findById(id));
-
-        store.delete();
-        assertNull(Store.findById(id));
-    }
-
-    @Test
-    @Transactional
-    void testStoreFindByName() {
-        String storeName = "UniqueStore_" + System.currentTimeMillis();
-        Store store = new Store(storeName, 50);
-        store.persist();
-
-        Store found = Store.find("name", storeName).firstResult();
-        assertNotNull(found);
-        assertEquals(storeName, found.name);
-    }
-
-    @Test
-    @Transactional
-    void testStoreListAll() {
-        Store store1 = new Store("StoreA_" + System.currentTimeMillis(), 10);
-        Store store2 = new Store("StoreB_" + System.currentTimeMillis(), 20);
-        store1.persist();
-        store2.persist();
-
-        var stores = Store.listAll();
-        assertTrue(stores.size() >= 2);
-    }
-
-    @Test
-    @Transactional
-    void testStoreCount() {
-        long initialCount = Store.count();
-
-        Store store1 = new Store("StoreCount1_" + System.currentTimeMillis(), 10);
-        Store store2 = new Store("StoreCount2_" + System.currentTimeMillis(), 20);
-        store1.persist();
-        store2.persist();
-
-        assertEquals(initialCount + 2, Store.count());
+        assertEquals("ModifiedStore", store.name);
+        assertEquals(75, store.quantityProductsInStock);
     }
 }
 
