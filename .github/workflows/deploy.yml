@@ -12,6 +12,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    # Note: Deploy workflow runs independently. To enforce sequential execution,
+    # GitHub Actions recommends using the workflow_run trigger (in separate file)
+    # or branch protection rules requiring status checks to pass
 
     steps:
     - uses: actions/checkout@v3
