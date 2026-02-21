@@ -22,8 +22,9 @@ class StoreResourceTest {
     @BeforeEach
     @Transactional
     void setup() {
+        // Clear all stores before each test
         Store.deleteAll();
-        // Mock do gateway legado
+        // Mock the legacy gateway
         resource.legacyStoreManagerGateway = mock(LegacyStoreManagerGateway.class);
     }
 
@@ -31,7 +32,7 @@ class StoreResourceTest {
     @Transactional
     void testGet() {
         Store mockStore = new Store();
-        mockStore.name = "Test";
+        mockStore.name = "Test_" + System.currentTimeMillis();
         mockStore.quantityProductsInStock = 1;
         mockStore.persist();
         assertFalse(resource.get().isEmpty());
@@ -46,7 +47,7 @@ class StoreResourceTest {
     @Transactional
     void testCreate() {
         Store store = new Store();
-        store.name = "NewStore";
+        store.name = "NewStore_" + System.currentTimeMillis();
         store.quantityProductsInStock = 1;
         store.id = null;
         try (Response response = resource.create(store)) {
@@ -71,14 +72,14 @@ class StoreResourceTest {
     @Transactional
     void testUpdate() {
         Store store = new Store();
-        store.name = "StoreA";
+        store.name = "StoreA_" + System.currentTimeMillis();
         store.quantityProductsInStock = 5;
         store.persist();
         Store updated = new Store();
-        updated.name = "StoreB";
+        updated.name = "StoreB_" + System.currentTimeMillis();
         updated.quantityProductsInStock = 10;
         Store result = resource.update(store.id, updated);
-        assertEquals("StoreB", result.name);
+        assertEquals(updated.name, result.name);
         assertEquals(10, result.quantityProductsInStock);
     }
 
@@ -86,14 +87,14 @@ class StoreResourceTest {
     @Transactional
     void testPatch() {
         Store store = new Store();
-        store.name = "StoreA";
+        store.name = "StoreA_Patch_" + System.currentTimeMillis();
         store.quantityProductsInStock = 5;
         store.persist();
         Store updated = new Store();
-        updated.name = "StoreB";
+        updated.name = "StoreB_Patch_" + System.currentTimeMillis();
         updated.quantityProductsInStock = 10;
         Store result = resource.patch(store.id, updated);
-        assertEquals("StoreB", result.name);
+        assertEquals(updated.name, result.name);
         assertEquals(10, result.quantityProductsInStock);
     }
 
@@ -101,16 +102,16 @@ class StoreResourceTest {
     @Transactional
     void testUpdateSuccess1() {
         Store store = new Store();
-        store.name = "Update";
+        store.name = "Update_" + System.currentTimeMillis();
         store.quantityProductsInStock = 5;
         store.persist();
 
         Store updated = new Store();
-        updated.name = "UpdatedName";
+        updated.name = "UpdatedName_" + System.currentTimeMillis();
         updated.quantityProductsInStock = 10;
 
         Store result = resource.update(store.id, updated);
-        assertEquals("UpdatedName", result.name);
+        assertEquals(updated.name, result.name);
         assertEquals(10, result.quantityProductsInStock);
     }
 
@@ -118,13 +119,13 @@ class StoreResourceTest {
     @Transactional
     void testGetSingleSuccess() {
         Store store = new Store();
-        store.name = "GetSingle";
+        store.name = "GetSingle_" + System.currentTimeMillis();
         store.quantityProductsInStock = 5;
         Store.persist(store);
 
         Store result = resource.getSingle(store.id);
         assertNotNull(result);
-        assertEquals("GetSingle", result.name);
+        assertEquals(store.name, result.name);
     }
 
     @Test
@@ -139,16 +140,16 @@ class StoreResourceTest {
     @Transactional
     void testPatchSuccess() {
         Store store = new Store();
-        store.name = "PatchStore";
+        store.name = "PatchStore_" + System.currentTimeMillis();
         store.quantityProductsInStock = 10;
         Store.persist(store);
 
         Store patch = new Store();
-        patch.name = "Patched";
+        patch.name = "Patched_" + System.currentTimeMillis();
         patch.quantityProductsInStock = 20;
 
         Store result = resource.patch(store.id, patch);
-        assertEquals("Patched", result.name);
+        assertEquals(patch.name, result.name);
         assertEquals(20, result.quantityProductsInStock);
     }
 
@@ -156,7 +157,7 @@ class StoreResourceTest {
     @Transactional
     void testPatchNoName() {
         Store store = new Store();
-        store.name = "PatchNoName";
+        store.name = "PatchNoName_" + System.currentTimeMillis();
         store.quantityProductsInStock = 10;
         Store.persist(store);
 
@@ -180,16 +181,16 @@ class StoreResourceTest {
     @Transactional
     void testUpdateSuccess2() {
         Store store = new Store();
-        store.name = "UpdateStore";
+        store.name = "UpdateStore_" + System.currentTimeMillis();
         store.quantityProductsInStock = 15;
         Store.persist(store);
 
         Store update = new Store();
-        update.name = "Updated";
+        update.name = "Updated_" + System.currentTimeMillis();
         update.quantityProductsInStock = 25;
 
         Store result = resource.update(store.id, update);
-        assertEquals("Updated", result.name);
+        assertEquals(update.name, result.name);
         assertEquals(25, result.quantityProductsInStock);
     }
 
@@ -197,7 +198,7 @@ class StoreResourceTest {
     @Transactional
     void testDeleteSuccess() {
         Store store = new Store();
-        store.name = "DeleteStore";
+        store.name = "DeleteStore_" + System.currentTimeMillis();
         store.quantityProductsInStock = 5;
         Store.persist(store);
 
@@ -220,7 +221,7 @@ class StoreResourceTest {
     @Transactional
     void testCreateNegativeStockShouldFail() {
         Store store = new Store();
-        store.name = "InvalidStock";
+        store.name = "InvalidStock_" + System.currentTimeMillis();
         store.quantityProductsInStock = -10;
         store.id = null;
         assertThrows(WebApplicationException.class, () -> {
@@ -232,35 +233,35 @@ class StoreResourceTest {
     @Transactional
     void testMultipleStoreCreationAndGet() {
         Store store1 = new Store();
-        store1.name = "StoreA";
+        store1.name = "StoreA_" + System.currentTimeMillis();
         store1.quantityProductsInStock = 10;
         Store.persist(store1);
 
         Store store2 = new Store();
-        store2.name = "StoreB";
+        store2.name = "StoreB_" + System.currentTimeMillis();
         store2.quantityProductsInStock = 20;
         Store.persist(store2);
 
         List<Store> stores = resource.get();
         assertEquals(2, stores.size());
-        assertTrue(stores.stream().anyMatch(s -> "StoreA".equals(s.name)));
-        assertTrue(stores.stream().anyMatch(s -> "StoreB".equals(s.name)));
+        assertTrue(stores.stream().anyMatch(s -> s.name.startsWith("StoreA_")));
+        assertTrue(stores.stream().anyMatch(s -> s.name.startsWith("StoreB_")));
     }
 
     @Test
     @Transactional
     void testPatchPartialUpdate() {
         Store store = new Store();
-        store.name = "PartialPatch";
+        store.name = "PartialPatch_" + System.currentTimeMillis();
         store.quantityProductsInStock = 5;
         Store.persist(store);
 
         Store patch = new Store();
-        patch.name = "PartialPatched";
-        // Não altera quantityProductsInStock
+        patch.name = "PartialPatched_" + System.currentTimeMillis();
+        // Does not alter quantityProductsInStock
 
         Store result = resource.patch(store.id, patch);
-        assertEquals("PartialPatched", result.name);
+        assertEquals(patch.name, result.name);
         assertEquals(5, result.quantityProductsInStock);
     }
 
@@ -268,15 +269,70 @@ class StoreResourceTest {
     @Transactional
     void testUpdatePartial() {
         Store store = new Store();
-        store.name = "PartialUpdate";
+        store.name = "PartialUpdate_" + System.currentTimeMillis();
         store.quantityProductsInStock = 8;
         Store.persist(store);
 
         Store update = new Store();
-        update.name = "PartialUpdated";
+        update.name = "PartialUpdated_" + System.currentTimeMillis();
 
         Store result = resource.update(store.id, update);
-        assertEquals("PartialUpdated", result.name);
+        assertEquals(update.name, result.name);
         assertEquals(8, result.quantityProductsInStock);
+    }
+
+    @Test
+    @Transactional
+    void testUpdateWithDuplicateNameShouldFail() {
+        Store store1 = new Store();
+        store1.name = "ExistingStore_" + System.currentTimeMillis();
+        store1.quantityProductsInStock = 10;
+        Store.persist(store1);
+
+        Store store2 = new Store();
+        store2.name = "AnotherStore_" + System.currentTimeMillis();
+        store2.quantityProductsInStock = 5;
+        Store.persist(store2);
+
+        Store updateWithDuplicate = new Store();
+        updateWithDuplicate.name = store1.name; // Try to use the same name as store1
+
+        assertThrows(WebApplicationException.class, () -> resource.update(store2.id, updateWithDuplicate));
+    }
+
+    @Test
+    @Transactional
+    void testPatchWithDuplicateNameShouldFail() {
+        Store store1 = new Store();
+        store1.name = "ExistingStore2_" + System.currentTimeMillis();
+        store1.quantityProductsInStock = 10;
+        Store.persist(store1);
+
+        Store store2 = new Store();
+        store2.name = "AnotherStore2_" + System.currentTimeMillis();
+        store2.quantityProductsInStock = 5;
+        Store.persist(store2);
+
+        Store patchWithDuplicate = new Store();
+        patchWithDuplicate.name = store1.name; // Try to use the same name as store1
+
+        assertThrows(WebApplicationException.class, () -> resource.patch(store2.id, patchWithDuplicate));
+    }
+
+    @Test
+    @Transactional
+    void testUpdateWithSameNameShouldSucceed() {
+        Store store = new Store();
+        store.name = "SameName_" + System.currentTimeMillis();
+        store.quantityProductsInStock = 10;
+        Store.persist(store);
+
+        Store update = new Store();
+        update.name = store.name; // Use the same name
+        update.quantityProductsInStock = 20;
+
+        Store result = resource.update(store.id, update);
+        assertEquals(store.name, result.name);
+        assertEquals(20, result.quantityProductsInStock);
     }
 }

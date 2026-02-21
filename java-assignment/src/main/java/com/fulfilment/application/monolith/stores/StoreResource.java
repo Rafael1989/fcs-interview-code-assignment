@@ -79,6 +79,14 @@ public class StoreResource {
       throw new WebApplicationException("Store with id of " + id + " does not exist.", 404);
     }
 
+    // Check if the new name already exists in another store
+    if (!entity.name.equals(updatedStore.name)) {
+      Store existingStore = Store.find("name", updatedStore.name).firstResult();
+      if (existingStore != null) {
+        throw new WebApplicationException("Store with name '" + updatedStore.name + "' already exists.", 422);
+      }
+    }
+
     entity.name = updatedStore.name;
     if (updatedStore.quantityProductsInStock != 0) {
       entity.quantityProductsInStock = updatedStore.quantityProductsInStock;
@@ -102,6 +110,14 @@ public class StoreResource {
 
     if (entity == null) {
       throw new WebApplicationException("Store with id of " + id + " does not exist.", 404);
+    }
+
+    // Check if the new name already exists in another store
+    if (!entity.name.equals(updatedStore.name)) {
+      Store existingStore = Store.find("name", updatedStore.name).firstResult();
+      if (existingStore != null) {
+        throw new WebApplicationException("Store with name '" + updatedStore.name + "' already exists.", 422);
+      }
     }
 
     if (entity.name != null) {
