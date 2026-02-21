@@ -8,16 +8,22 @@ import java.nio.file.Path;
 public class LegacyStoreManagerGateway {
 
   public void createStoreOnLegacySystem(Store store) {
+    if (store == null) {
+      throw new IllegalArgumentException("Store cannot be null");
+    }
     // just to emulate as this would send this to a legacy system, let's write a temp file with the
     writeToFile(store);
   }
 
   public void updateStoreOnLegacySystem(Store store) {
+    if (store == null) {
+      throw new IllegalArgumentException("Store cannot be null");
+    }
     // just to emulate as this would send this to a legacy system, let's write a temp file with the
     writeToFile(store);
   }
 
-  private void writeToFile(Store store) {
+  protected void writeToFile(Store store) {
     try {
       // Step 1: Create a temporary file
       Path tempFile;

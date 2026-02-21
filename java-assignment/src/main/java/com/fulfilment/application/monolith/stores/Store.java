@@ -19,4 +19,18 @@ public class Store extends PanacheEntity {
   public Store(String name) {
     this.name = name;
   }
+
+  public Store(String name, int quantityProductsInStock) {
+    this.name = name;
+    this.quantityProductsInStock = quantityProductsInStock;
+  }
+
+  @Override
+  public String toString() {
+    return "Store{" +
+        "id=" + id +
+        ", name='" + name + '\'' +
+        ", quantityProductsInStock=" + quantityProductsInStock +
+        '}';
+  }
 }

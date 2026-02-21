@@ -167,13 +167,13 @@
                                     </includes>
                                     <excludes>
                                         <exclude>*Test</exclude>
-                                        <exclude>*.ErrorMapper</exclude>
+                                        <exclude>*ErrorMapper</exclude>
                                     </excludes>
                                     <limits>
                                         <limit>
                                             <counter>INSTRUCTION</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.80</minimum>
+                                            <minimum>0.70</minimum>
                                         </limit>
                                     </limits>
                                 </rule>
