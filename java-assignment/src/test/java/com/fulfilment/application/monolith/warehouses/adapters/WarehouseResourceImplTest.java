@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.fulfilment.application.monolith.warehouses.adapters.database.WarehouseRepository;
+import com.fulfilment.application.monolith.warehouses.adapters.restapi.WarehouseErrorMapper;
 import com.fulfilment.application.monolith.warehouses.adapters.restapi.WarehouseResourceImpl;
 import com.fulfilment.application.monolith.warehouses.domain.models.Warehouse;
 import com.fulfilment.application.monolith.warehouses.domain.usecases.ArchiveWarehouseUseCase;
@@ -99,6 +100,46 @@ public class WarehouseResourceImplTest {
   }
 
   @Test
+  void testCreateANewWarehouseUnitExceedsCapacity() {
+    // Given
+    com.warehouse.api.beans.Warehouse apiWarehouse = new com.warehouse.api.beans.Warehouse();
+    apiWarehouse.setBusinessUnitCode("NEW-WH");
+    apiWarehouse.setLocation("AMSTERDAM-001");
+    apiWarehouse.setCapacity(200);
+    apiWarehouse.setStock(50);
+
+    doThrow(new IllegalArgumentException("Warehouse capacity would exceed maximum capacity for location: AMSTERDAM-001"))
+        .when(createWarehouseUseCase).create(any());
+
+    // When & Then
+    jakarta.ws.rs.WebApplicationException ex =
+        assertThrows(
+            jakarta.ws.rs.WebApplicationException.class,
+            () -> resource.createANewWarehouseUnit(apiWarehouse));
+    assertEquals(422, ex.getResponse().getStatus());
+  }
+
+  @Test
+  void testCreateANewWarehouseUnitDuplicateBusinessUnitCode() {
+    // Given
+    com.warehouse.api.beans.Warehouse apiWarehouse = new com.warehouse.api.beans.Warehouse();
+    apiWarehouse.setBusinessUnitCode("EXISTING-WH");
+    apiWarehouse.setLocation("AMSTERDAM-001");
+    apiWarehouse.setCapacity(100);
+    apiWarehouse.setStock(50);
+
+    doThrow(new IllegalArgumentException("Business Unit Code already exists: EXISTING-WH"))
+        .when(createWarehouseUseCase).create(any());
+
+    // When & Then
+    jakarta.ws.rs.WebApplicationException ex =
+        assertThrows(
+            jakarta.ws.rs.WebApplicationException.class,
+            () -> resource.createANewWarehouseUnit(apiWarehouse));
+    assertEquals(422, ex.getResponse().getStatus());
+  }
+
+  @Test
   void testGetAWarehouseUnitByID() {
     // Given
     Warehouse warehouse = new Warehouse();
@@ -184,5 +225,73 @@ public class WarehouseResourceImplTest {
     assertNotNull(result);
     assertEquals("WH-001", result.getBusinessUnitCode());
     verify(replaceWarehouseUseCase).replace(any());
+  }
+
+  @Test
+  void testErrorMapperWebApplicationException() {
+    // Given
+    WarehouseErrorMapper mapper = new WarehouseErrorMapper();
+    mapper.objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+    jakarta.ws.rs.WebApplicationException ex = new jakarta.ws.rs.WebApplicationException("error", jakarta.ws.rs.core.Response.status(422).build());
+
+    // When
+    jakarta.ws.rs.core.Response response = mapper.toResponse(ex);
+
+    // Then
+    assertEquals(422, response.getStatus());
+    String entity = response.getEntity().toString();
+    assertTrue(entity.contains("WebApplicationException"));
+  }
+
+  @Test
+  void testErrorMapperGenericException() {
+    // Given
+    WarehouseErrorMapper mapper = new WarehouseErrorMapper();
+    mapper.objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+    Exception ex = new Exception("generic error");
+
+    // When
+    jakarta.ws.rs.core.Response response = mapper.toResponse(ex);
+
+    // Then
+    assertEquals(500, response.getStatus());
+    String entity = response.getEntity().toString();
+    assertTrue(entity.contains("Exception"));
+    assertTrue(entity.contains("generic error"));
+  }
+
+  @Test
+  void testErrorMapperIllegalArgumentException() {
+    // Given
+    WarehouseErrorMapper mapper = new WarehouseErrorMapper();
+    mapper.objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+    IllegalArgumentException ex = new IllegalArgumentException("Warehouse capacity would exceed maximum capacity for location: AMSTERDAM-001");
+
+    // When
+    jakarta.ws.rs.core.Response response = mapper.toResponse(ex);
+
+    // Then
+    assertEquals(422, response.getStatus());
+    String entity = response.getEntity().toString();
+    assertTrue(entity.contains("IllegalArgumentException"));
+    assertTrue(entity.contains("Warehouse capacity would exceed maximum capacity"));
+  }
+
+  @Test
+  void testErrorMapperConstraintViolationException() {
+    // Given
+    WarehouseErrorMapper mapper = new WarehouseErrorMapper();
+    mapper.objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+    jakarta.validation.ConstraintViolationException ex =
+        new jakarta.validation.ConstraintViolationException("Validation failed", java.util.Set.of());
+
+    // When
+    jakarta.ws.rs.core.Response response = mapper.toResponse(ex);
+
+    // Then
+    assertEquals(400, response.getStatus());
+    String entity = response.getEntity().toString();
+    assertTrue(entity.contains("ConstraintViolationException"));
+    assertTrue(entity.contains("Validation error"));
   }
 }

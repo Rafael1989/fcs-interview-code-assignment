@@ -47,9 +47,13 @@ public class WarehouseResourceImpl implements WarehouseResource {
 
   @Override
   public Warehouse createANewWarehouseUnit(@NotNull Warehouse data) {
-    var warehouse = toDomainWarehouse(data);
-    createWarehouseUseCase.create(warehouse);
-    return data;
+    try {
+      var warehouse = toDomainWarehouse(data);
+      createWarehouseUseCase.create(warehouse);
+      return data;
+    } catch (IllegalArgumentException e) {
+      throw new WebApplicationException(e.getMessage(), 422);
+    }
   }
 
   @Override
