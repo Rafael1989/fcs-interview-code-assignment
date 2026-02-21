@@ -88,6 +88,8 @@
     </dependencies>
 
     <build>
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <testSourceDirectory>src/test/java</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -127,6 +129,24 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/generated-sources/jaxrs</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.10</version>
@@ -138,6 +158,7 @@
                         </goals>
                         <configuration>
                             <destFile>${project.build.directory}/jacoco.exec</destFile>
+                            <append>true</append>
                         </configuration>
                     </execution>
                     <execution>
@@ -166,8 +187,8 @@
                                         <include>com.warehouse.api.beans.**</include>
                                     </includes>
                                     <excludes>
-                                        <exclude>*Test</exclude>
-                                        <exclude>*ErrorMapper</exclude>
+                                        <exclude>**/*Test</exclude>
+                                        <exclude>**/*Test$*</exclude>
                                     </excludes>
                                     <limits>
                                         <limit>
