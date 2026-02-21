@@ -132,30 +132,38 @@
                 <version>0.8.10</version>
                 <executions>
                     <execution>
+                        <id>prepare-agent</id>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
+                        <configuration>
+                            <destFile>${project.build.directory}/jacoco.exec</destFile>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>report</id>
-                        <phase>test</phase>
+                        <phase>verify</phase>
                         <goals>
                             <goal>report</goal>
                         </goals>
+                        <configuration>
+                            <dataFile>${project.build.directory}/jacoco.exec</dataFile>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>jacoco-check</id>
-                        <phase>test</phase>
+                        <phase>verify</phase>
                         <goals>
                             <goal>check</goal>
                         </goals>
                         <configuration>
+                            <dataFile>${project.build.directory}/jacoco.exec</dataFile>
                             <rules>
                                 <rule>
                                     <element>BUNDLE</element>
                                     <includes>
-                                        <include>com.fulfilment.application.monolith.*</include>
-                                        <include>com.warehouse.api.beans.*</include>
+                                        <include>com.fulfilment.application.monolith.**</include>
+                                        <include>com.warehouse.api.beans.**</include>
                                     </includes>
                                     <excludes>
                                         <exclude>*Test</exclude>
