@@ -811,18 +811,16 @@
                 <div class="endpoint-card">
                     <div>
                         <span class="method-badge method-post">POST</span>
-                        <span class="endpoint-path">/fulfillment/associate</span>
+                        <span class="endpoint-path">/fulfillment/warehouse/{warehouseCode}/product/{productId}/store/{storeId}</span>
                     </div>
                     <div class="endpoint-description">Associate a warehouse to a product in a store</div>
 
                     <div class="params-section">
-                        <div class="section-title"><i class="fas fa-book"></i> Request Body</div>
-                        <div class="json-block">
-{
-  "warehouseCode": "WH-AMSTERDAM-001",
-  "productId": 1,
-  "storeId": 1
-}
+                        <div class="section-title"><i class="fas fa-cogs"></i> Path Parameters</div>
+                        <div class="params-list">
+                            <div class="param-item"><span class="param-name">warehouseCode</span> <span class="param-type">(string, required)</span> - Warehouse business unit code</div>
+                            <div class="param-item"><span class="param-name">productId</span> <span class="param-type">(number, required)</span> - Product ID</div>
+                            <div class="param-item"><span class="param-name">storeId</span> <span class="param-type">(number, required)</span> - Store ID</div>
                         </div>
                     </div>
 
@@ -831,14 +829,76 @@
                         <div class="json-block">
 {
   "id": "assoc-001",
-  "warehouseCode": "WH-AMSTERDAM-001",
+  "warehouseBusinessUnitCode": "WH-AMSTERDAM-001",
   "productId": 1,
   "storeId": 1,
-  "associatedAt": "2026-02-22T10:30:00Z"
+  "createdAt": "2026-02-22T10:30:00Z"
 }
                         </div>
                     </div>
-                    <button class="try-it-btn" onclick="testAPI('POST', '/fulfillment/associate')">Try It</button>
+                    <button class="try-it-btn" onclick="testAPI('POST', '/fulfillment/warehouse/{businessUnitCode}/product/{id}/store/{id}')">Try It</button>
+                </div>
+
+                <div class="endpoint-card">
+                    <div>
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/fulfillment/warehouse/{warehouseCode}</span>
+                    </div>
+                    <div class="endpoint-description">Get all associations for a specific warehouse</div>
+
+                    <div class="params-section">
+                        <div class="section-title"><i class="fas fa-cogs"></i> Path Parameters</div>
+                        <div class="params-list">
+                            <div class="param-item"><span class="param-name">warehouseCode</span> <span class="param-type">(string, required)</span> - Warehouse business unit code</div>
+                        </div>
+                    </div>
+
+                    <div class="response-section">
+                        <div class="section-title"><i class="fas fa-arrow-right"></i> Response (200 OK)</div>
+                        <div class="json-block">
+[
+  {
+    "id": "assoc-001",
+    "warehouseBusinessUnitCode": "WH-AMSTERDAM-001",
+    "productId": 1,
+    "storeId": 1,
+    "createdAt": "2026-02-22T10:30:00Z"
+  }
+]
+                        </div>
+                    </div>
+                    <button class="try-it-btn" onclick="testAPI('GET', '/fulfillment/warehouse/{businessUnitCode}')">Try It</button>
+                </div>
+
+                <div class="endpoint-card">
+                    <div>
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/fulfillment/store/{storeId}</span>
+                    </div>
+                    <div class="endpoint-description">Get all associations for a specific store</div>
+
+                    <div class="params-section">
+                        <div class="section-title"><i class="fas fa-cogs"></i> Path Parameters</div>
+                        <div class="params-list">
+                            <div class="param-item"><span class="param-name">storeId</span> <span class="param-type">(number, required)</span> - Store ID</div>
+                        </div>
+                    </div>
+
+                    <div class="response-section">
+                        <div class="section-title"><i class="fas fa-arrow-right"></i> Response (200 OK)</div>
+                        <div class="json-block">
+[
+  {
+    "id": "assoc-001",
+    "warehouseBusinessUnitCode": "WH-AMSTERDAM-001",
+    "productId": 1,
+    "storeId": 1,
+    "createdAt": "2026-02-22T10:30:00Z"
+  }
+]
+                        </div>
+                    </div>
+                    <button class="try-it-btn" onclick="testAPI('GET', '/fulfillment/store/{id}')">Try It</button>
                 </div>
 
                 <div class="endpoint-card">
@@ -846,7 +906,7 @@
                         <span class="method-badge method-get">GET</span>
                         <span class="endpoint-path">/fulfillment/product/{productId}/store/{storeId}</span>
                     </div>
-                    <div class="endpoint-description">Get warehouses associated with a product in a store</div>
+                    <div class="endpoint-description">Get associations for a specific product and store</div>
 
                     <div class="params-section">
                         <div class="section-title"><i class="fas fa-cogs"></i> Path Parameters</div>
@@ -861,40 +921,16 @@
                         <div class="json-block">
 [
   {
-    "warehouseCode": "WH-AMSTERDAM-001",
-    "location": "AMSTERDAM-001",
-    "capacity": 1000,
-    "stock": 850
+    "id": "assoc-001",
+    "warehouseBusinessUnitCode": "WH-AMSTERDAM-001",
+    "productId": 1,
+    "storeId": 1,
+    "createdAt": "2026-02-22T10:30:00Z"
   }
 ]
                         </div>
                     </div>
                     <button class="try-it-btn" onclick="testAPI('GET', '/fulfillment/product/{id}/store/{id}')">Try It</button>
-                </div>
-
-                <div class="endpoint-card">
-                    <div>
-                        <span class="method-badge method-get">GET</span>
-                        <span class="endpoint-path">/fulfillment/associations</span>
-                    </div>
-                    <div class="endpoint-description">List all warehouse-product-store associations</div>
-
-                    <div class="response-section">
-                        <div class="section-title"><i class="fas fa-arrow-right"></i> Response (200 OK)</div>
-                        <div class="json-block">
-[
-  {
-    "id": "assoc-001",
-    "warehouseCode": "WH-AMSTERDAM-001",
-    "productId": 1,
-    "storeId": 1,
-    "associatedAt": "2026-02-22T10:30:00Z"
-  }
-]
-                        </div>
-                    </div>
-                    <button class="try-it-btn" onclick="testAPI('GET', '/fulfillment/associations')">Try It</button>
-                </div>
             </div>
 
             <!-- MONITORING SECTION -->
@@ -1143,6 +1179,15 @@
                     }).join('/');
                 }
 
+                // Handle fulfillment endpoints with businessUnitCode parameter
+                if (isFulfillmentEndpoint && endpoint.includes('{businessUnitCode}')) {
+                    const warehouseCode = await getFirstItemId('/warehouse');
+                    if (!warehouseCode) {
+                        throw new Error('No warehouses found. Please create a warehouse first.');
+                    }
+                    finalEndpoint = finalEndpoint.replace('{businessUnitCode}', warehouseCode);
+                }
+
                 // Handle warehouse endpoints
                 if (hasBusinessUnitCode) {
                     const warehouseCode = await getFirstItemId('/warehouse');
@@ -1308,30 +1353,11 @@
             }
 
             // FULFILLMENT endpoints
-            if (endpoint.includes('/fulfillment/associate')) {
-                // Try to get real IDs from the API
-                let warehouseCode = 'WH-AMSTERDAM-001';
-                let productId = 1;
-                let storeId = 1;
-
-                try {
-                    const warehouseId = await getFirstItemId('/warehouse');
-                    if (warehouseId) warehouseCode = warehouseId;
-
-                    const productIdReal = await getFirstItemId('/product');
-                    if (productIdReal) productId = productIdReal;
-
-                    const storeIdReal = await getFirstItemId('/store');
-                    if (storeIdReal) storeId = storeIdReal;
-                } catch (error) {
-                    console.log('Could not fetch real IDs, using defaults');
-                }
-
-                return JSON.stringify({
-                    warehouseCode: warehouseCode,
-                    productId: productId,
-                    storeId: storeId
-                });
+            if (endpoint.includes('/fulfillment')) {
+                // POST endpoints don't need a body for this endpoint as it uses path parameters
+                // The actual endpoint POST /fulfillment/warehouse/{warehouseCode}/product/{productId}/store/{storeId}
+                // doesn't take a request body, parameters are in the path
+                return JSON.stringify({});
             }
 
             return JSON.stringify({});
