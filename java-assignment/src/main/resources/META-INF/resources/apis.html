@@ -1172,7 +1172,9 @@
                     });
                 }
                 if (method === 'PATCH') {
+                    // PATCH for store requires name field due to validation in StoreResource
                     return JSON.stringify({
+                        name: 'Patched Store ' + new Date().getTime(),
                         quantityProductsInStock: 150
                     });
                 }
