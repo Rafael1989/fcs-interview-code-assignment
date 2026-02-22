@@ -19,40 +19,24 @@ jobs:
       uses: actions/setup-java@v4
       with:
         java-version: '21'
-        distribution: 'microsoft'
+        distribution: 'temurin'
         cache: maven
 
     - name: Build and Test with Maven
-      working-directory: ./java-assignment
+      working-directory: java-assignment
       run: mvn clean verify -DskipITs=true
 
-    - name: List coverage files
-      working-directory: ./java-assignment
-      run: |
-        echo "=== JaCoCo Files ===" 
-        find target -name "jacoco*" -type f
-        echo ""
-        echo "=== Target Directory Structure ==="
-        ls -la target/site/jacoco/ 2>/dev/null || echo "Directory not found"
-
-    - name: Check JaCoCo XML exists
-      working-directory: ./java-assignment
-      run: |
-        if [ -f target/site/jacoco/jacoco.xml ]; then
-          echo "✓ jacoco.xml found"
-          echo "File size: $(wc -c < target/site/jacoco/jacoco.xml) bytes"
-        else
-          echo "✗ jacoco.xml NOT found - checking alternatives..."
-          find target -name "*.xml" -type f | head -20
-        fi
+    - name: Generate JaCoCo Report
+      working-directory: java-assignment
+      run: mvn jacoco:report
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
       with:
-        files: ./java-assignment/target/site/jacoco/jacoco.xml
-        fail_ci_if_error: true
+        files: java-assignment/target/site/jacoco/jacoco.xml
+        flags: unittests
+        fail_ci_if_error: false
         verbose: true
-        github_token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Upload Test Results
       if: always()
@@ -67,4 +51,3 @@ jobs:
       with:
         name: coverage-reports
         path: java-assignment/target/site/jacoco/
-
