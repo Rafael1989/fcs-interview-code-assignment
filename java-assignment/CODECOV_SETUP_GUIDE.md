@@ -1,20 +1,20 @@
 # Codecov Coverage Setup Guide
 
-## ✅ Status Current
+## ✅ Current Status
 
-O workflow do GitHub Actions foi configurado para automaticamente:
-1. ✅ Build do projeto com Maven
-2. ✅ Executar todos os testes
-3. ✅ Gerar relatório JaCoCo em formato XML
-4. ✅ Fazer upload automático para Codecov
+The GitHub Actions workflow has been configured to automatically:
+1. ✅ Build the project with Maven
+2. ✅ Execute all tests
+3. ✅ Generate JaCoCo report in XML format
+4. ✅ Automatically upload to Codecov
 
-## 🔍 Como Verificar o Status
+## 🔍 How to Verify Status
 
-### 1. **Verificar os Logs do GitHub Actions**
+### 1. **Check GitHub Actions Logs**
 
-1. Vá para: https://github.com/Rafael1989/fcs-interview-code-assignment/actions
-2. Clique no workflow mais recente "Build and Test with Coverage"
-3. Verifique se passou em todos os steps:
+1. Go to: https://github.com/Rafael1989/fcs-interview-code-assignment/actions
+2. Click on the latest "Build and Test with Coverage" workflow
+3. Verify it passed all steps:
    - ✓ Checkout
    - ✓ Set up JDK 21
    - ✓ Build and Test with Maven
@@ -25,32 +25,32 @@ O workflow do GitHub Actions foi configurado para automaticamente:
    - ✓ Upload Test Results
    - ✓ Upload Coverage Reports
 
-### 2. **Verificar no Codecov**
+### 2. **Check on Codecov**
 
-1. Vá para: https://codecov.io/gh/Rafael1989/fcs-interview-code-assignment
-2. Procure pela aba **Commits** 
-3. Cada commit deve aparecer com:
-   - Data/hora
-   - Porcentagem de cobertura
-   - Status (✓ ou ×)
+1. Go to: https://codecov.io/gh/Rafael1989/fcs-interview-code-assignment
+2. Look for the **Commits** tab
+3. Each commit should appear with:
+   - Date/time
+   - Coverage percentage
+   - Status (✓ or ×)
 
-### 3. **Se a Cobertura Não Aparecer**
+### 3. **If Coverage Doesn't Appear**
 
-Execute estes passos:
+Follow these steps:
 
-#### a) **Adicionar Token do Codecov (Recomendado)**
+#### a) **Add Codecov Token (Recommended)**
 
-1. Vá para: https://codecov.io/gh/Rafael1989/fcs-interview-code-assignment/settings
-2. Copie o token fornecido
-3. No GitHub, vá para: https://github.com/Rafael1989/fcs-interview-code-assignment/settings/secrets/actions
-4. Clique em "New repository secret"
-5. Nome: `CODECOV_TOKEN`
-6. Valor: (cole o token do Codecov)
-7. Clique em "Add secret"
+1. Go to: https://codecov.io/gh/Rafael1989/fcs-interview-code-assignment/settings
+2. Copy the provided token
+3. On GitHub, go to: https://github.com/Rafael1989/fcs-interview-code-assignment/settings/secrets/actions
+4. Click "New repository secret"
+5. Name: `CODECOV_TOKEN`
+6. Value: (paste the Codecov token)
+7. Click "Add secret"
 
-#### b) **Verificar os Logs de Upload**
+#### b) **Check Upload Logs**
 
-No GitHub Actions, procure no step "Upload coverage to Codecov" por mensagens como:
+In GitHub Actions, search the "Upload coverage to Codecov" step for messages like:
 
 ```
 Reports have been queued for processing
@@ -58,88 +58,88 @@ Reports have been processed successfully
 Upload successful
 ```
 
-#### c) **Verificar se o JaCoCo XML está sendo gerado**
+#### c) **Verify JaCoCo XML is Being Generated**
 
-No step "Check JaCoCo XML exists", procure por:
+In the "Check JaCoCo XML exists" step, look for:
 
 ```
 ✓ jacoco.xml found
 File size: XXXXX bytes
 ```
 
-Se não encontrar, significa que o build não está gerando o relatório.
+If not found, it means the build is not generating the report.
 
-## 📋 Verificação Rápida
+## 📋 Quick Verification
 
 ```bash
-# 1. Build local para gerar JaCoCo
+# 1. Local build to generate JaCoCo
 cd java-assignment
 mvn clean verify
 
-# 2. Gerar relatório
+# 2. Generate report
 mvn jacoco:report
 
-# 3. Verificar se foi gerado
+# 3. Verify it was generated
 ls -la target/site/jacoco/jacoco.xml
 
-# 4. Ver o tamanho
+# 4. Check file size
 wc -c target/site/jacoco/jacoco.xml
 ```
 
 ## 🔧 Troubleshooting
 
-### Problema: "jacoco.xml not found"
+### Problem: "jacoco.xml not found"
 
-**Solução:**
+**Solution:**
 ```bash
-# 1. Limpar e rebuildar
+# 1. Clean and rebuild
 mvn clean verify
 
-# 2. Gerar relatório explicitamente
+# 2. Generate report explicitly
 mvn jacoco:report
 
-# 3. Verificar se existe
+# 3. Verify it exists
 find target -name "jacoco.xml"
 ```
 
-### Problema: "Upload failed"
+### Problem: "Upload failed"
 
 **Checklist:**
-- [ ] Token do Codecov foi adicionado ao GitHub Secrets
-- [ ] O arquivo `jacoco.xml` foi gerado localmente
-- [ ] A conta do Codecov existe
-- [ ] O repositório foi conectado ao Codecov
+- [ ] Codecov token was added to GitHub Secrets
+- [ ] The `jacoco.xml` file was generated locally
+- [ ] The Codecov account exists
+- [ ] The repository was connected to Codecov
 
-### Problema: "Coverage not updating"
+### Problem: "Coverage not updating"
 
-**Causas possíveis:**
-1. Token não configurado
-2. Arquivo não está sendo gerado
-3. Caminho do arquivo está incorreto
-4. Codecov está processando (leva alguns minutos)
+**Possible causes:**
+1. Token not configured
+2. File is not being generated
+3. File path is incorrect
+4. Codecov is processing (takes a few minutes)
 
-**Solução:**
-1. Aguarde 5-10 minutos
-2. Faça um novo push para trigger o workflow novamente
-3. Verifique os logs detalhadamente
+**Solution:**
+1. Wait 5-10 minutes
+2. Make a new push to trigger the workflow again
+3. Check logs in detail
 
-## 📊 Métricas Esperadas
+## 📊 Expected Metrics
 
-Com base no projeto atual:
+Based on the current project:
 
-- **Instruction Coverage:** 70%+ (configurado no pom.xml)
-- **Branch Coverage:** Variável
-- **Line Coverage:** Variável
-- **Método Coverage:** 70%+
+- **Instruction Coverage:** 70%+ (configured in pom.xml)
+- **Branch Coverage:** Variable
+- **Line Coverage:** Variable
+- **Method Coverage:** 70%+
 
-## 🚀 Próximas Ações
+## 🚀 Next Steps
 
-1. ✅ Aguarde o workflow completar (2-5 minutos)
-2. ✅ Verifique os logs do GitHub Actions
-3. ✅ Acesse o Codecov para ver a cobertura
-4. ✅ Se não aparecer, adicione o token e trigger novamente
+1. ✅ Wait for workflow to complete (2-5 minutes)
+2. ✅ Check GitHub Actions logs
+3. ✅ Visit Codecov to view coverage
+4. ✅ If not appearing, add token and trigger again
 
-## 📚 Recursos Úteis
+## 📚 Useful Resources
 
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)
 - [Codecov Documentation](https://docs.codecov.io/)
@@ -148,7 +148,7 @@ Com base no projeto atual:
 
 ---
 
-**Data de Atualização:** 22 de Fevereiro de 2026
+**Update Date:** February 22, 2026
 
-**Status:** ✅ Configurado e pronto para uso
+**Status:** ✅ Configured and ready to use
 
