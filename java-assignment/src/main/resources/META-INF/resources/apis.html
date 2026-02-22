@@ -1187,34 +1187,42 @@
                 const warehouses = await response.json();
 
                 const validLocations = {
-                    'ZWOLLE-001': 1,
-                    'ZWOLLE-002': 2,
-                    'AMSTERDAM-001': 5,
-                    'AMSTERDAM-002': 3,
-                    'TILBURG-001': 1,
-                    'HELMOND-001': 1,
-                    'EINDHOVEN-001': 2,
-                    'VETSBY-001': 1
+                    'ZWOLLE-001': { max: 1, capacity: 40 },
+                    'ZWOLLE-002': { max: 2, capacity: 50 },
+                    'AMSTERDAM-001': { max: 5, capacity: 100 },
+                    'AMSTERDAM-002': { max: 3, capacity: 75 },
+                    'TILBURG-001': { max: 1, capacity: 40 },
+                    'HELMOND-001': { max: 1, capacity: 45 },
+                    'EINDHOVEN-001': { max: 2, capacity: 70 },
+                    'VETSBY-001': { max: 1, capacity: 90 }
                 };
 
-                // Count warehouses per location (only active ones, not archived)
-                const locationCounts = {};
+                // Count warehouses per location and calculate used capacity (only active ones, not archived)
+                const locationStats = {};
                 for (const location of Object.keys(validLocations)) {
-                    locationCounts[location] = warehouses.filter(w => w.location === location && !w.archivedAt).length;
+                    const activeWarehouses = warehouses.filter(w => w.location === location && !w.archivedAt);
+                    locationStats[location] = {
+                        count: activeWarehouses.length,
+                        usedCapacity: activeWarehouses.reduce((sum, w) => sum + (w.capacity || 0), 0)
+                    };
                 }
 
-                // Find a location with available space
-                for (const [location, maxWarehouses] of Object.entries(validLocations)) {
-                    if ((locationCounts[location] || 0) < maxWarehouses) {
+                // Find a location with available space (both warehouse count and capacity)
+                for (const [location, limits] of Object.entries(validLocations)) {
+                    const stats = locationStats[location];
+                    const remainingCapacity = limits.capacity - stats.usedCapacity;
+
+                    // Check if location can fit a new warehouse with 20 capacity (conservative estimate)
+                    if (stats.count < limits.max && remainingCapacity >= 20) {
                         return location;
                     }
                 }
 
-                // If all are full, return the first one (will get error but shows the constraint)
-                return 'AMSTERDAM-002';
+                // If all are at capacity, return null to trigger error
+                return null;
             } catch (error) {
                 console.log('Error getting available location', error);
-                return 'AMSTERDAM-002'; // fallback
+                return 'AMSTERDAM-001'; // fallback
             }
         }
 
@@ -1259,10 +1267,13 @@
             if (endpoint.includes('/warehouse')) {
                 if (method === 'POST') {
                     const location = await getAvailableLocation();
+                    if (!location) {
+                        throw new Error('No locations available with sufficient capacity. All locations are at their maximum capacity limit.');
+                    }
                     return JSON.stringify({
                         businessUnitCode: 'WH-TEST-' + new Date().getTime(),
                         location: location,
-                        capacity: 30,
+                        capacity: 20,
                         stock: 0
                     });
                 }
