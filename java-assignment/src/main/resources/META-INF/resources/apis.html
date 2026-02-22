@@ -1080,6 +1080,9 @@
     </div>
 
     <script>
+        // Cache para armazenar dados dos endpoints
+        const dataCache = {};
+
         function switchTab(tabId) {
             // Hide all sections
             const sections = document.querySelectorAll('.api-section');
@@ -1096,54 +1099,67 @@
             event.target.closest('.tab-btn').classList.add('active');
         }
 
-        function testAPI(method, endpoint) {
+        async function testAPI(method, endpoint) {
             const button = event.target;
             button.disabled = true;
             button.textContent = 'Loading...';
 
-            // Determine request options based on method
-            const options = {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            };
-
-            // Add sample body for POST, PUT, PATCH
-            if (method === 'POST' || method === 'PUT' || method === 'PATCH') {
-                options.body = getRequestBody(endpoint, method);
-            }
-
-            fetch(endpoint, options)
-                .then(response => {
-                    const contentType = response.headers.get('content-type');
-                    if (contentType && contentType.includes('application/json')) {
-                        return response.json().then(data => ({
-                            status: response.status,
-                            statusText: response.statusText,
-                            data: data
-                        }));
-                    } else {
-                        return {
-                            status: response.status,
-                            statusText: response.statusText,
-                            data: null
-                        };
+            try {
+                // Determine request options based on method
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
                     }
-                })
-                .then(result => {
-                    showResponse(button, result, method, endpoint);
-                })
-                .catch(error => {
-                    showError(button, error, method, endpoint);
-                })
-                .finally(() => {
-                    button.disabled = false;
-                    button.textContent = 'Try It';
-                });
+                };
+
+                // Add sample body for POST, PUT, PATCH
+                if (method === 'POST' || method === 'PUT' || method === 'PATCH') {
+                    options.body = await getRequestBody(endpoint, method);
+                }
+
+                const response = await fetch(endpoint, options);
+                const contentType = response.headers.get('content-type');
+                let result;
+
+                if (contentType && contentType.includes('application/json')) {
+                    const data = await response.json();
+                    result = {
+                        status: response.status,
+                        statusText: response.statusText,
+                        data: data
+                    };
+                } else {
+                    result = {
+                        status: response.status,
+                        statusText: response.statusText,
+                        data: null
+                    };
+                }
+
+                showResponse(button, result, method, endpoint);
+            } catch (error) {
+                showError(button, error, method, endpoint);
+            } finally {
+                button.disabled = false;
+                button.textContent = 'Try It';
+            }
         }
 
-        function getRequestBody(endpoint, method) {
+        async function getFirstItemId(endpoint) {
+            try {
+                const response = await fetch(endpoint);
+                const data = await response.json();
+                if (Array.isArray(data) && data.length > 0) {
+                    return data[0].id || data[0].businessUnitCode || null;
+                }
+            } catch (error) {
+                console.log('Error fetching ' + endpoint, error);
+            }
+            return null;
+        }
+
+        async function getRequestBody(endpoint, method) {
             // Sample request bodies based on endpoint and method
 
             // PRODUCT endpoints
@@ -1209,10 +1225,28 @@
 
             // FULFILLMENT endpoints
             if (endpoint.includes('/fulfillment/associate')) {
+                // Try to get real IDs from the API
+                let warehouseCode = 'WH-AMSTERDAM-001';
+                let productId = 1;
+                let storeId = 1;
+
+                try {
+                    const warehouseId = await getFirstItemId('/warehouse');
+                    if (warehouseId) warehouseCode = warehouseId;
+
+                    const productIdReal = await getFirstItemId('/product');
+                    if (productIdReal) productId = productIdReal;
+
+                    const storeIdReal = await getFirstItemId('/store');
+                    if (storeIdReal) storeId = storeIdReal;
+                } catch (error) {
+                    console.log('Could not fetch real IDs, using defaults');
+                }
+
                 return JSON.stringify({
-                    warehouseCode: 'WH-AMSTERDAM-001',
-                    productId: 1,
-                    storeId: 1
+                    warehouseCode: warehouseCode,
+                    productId: productId,
+                    storeId: storeId
                 });
             }
 
