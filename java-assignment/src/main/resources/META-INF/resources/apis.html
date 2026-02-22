@@ -1240,25 +1240,31 @@
             // WAREHOUSE endpoints
             if (endpoint.includes('/warehouse')) {
                 if (endpoint.includes('/replacement')) {
+                    const validLocations = ['ZWOLLE-001', 'ZWOLLE-002', 'AMSTERDAM-001', 'AMSTERDAM-002', 'TILBURG-001', 'HELMOND-001', 'EINDHOVEN-001', 'VETSBY-001'];
+                    const randomLocation = validLocations[Math.floor(Math.random() * validLocations.length)];
                     return JSON.stringify({
                         businessUnitCode: 'WH-NEW-' + new Date().getTime(),
-                        location: 'NEW-LOCATION-001',
-                        capacity: 600
+                        location: randomLocation,
+                        capacity: 60
                     });
                 }
                 if (method === 'POST') {
+                    const validLocations = ['ZWOLLE-001', 'ZWOLLE-002', 'AMSTERDAM-001', 'AMSTERDAM-002', 'TILBURG-001', 'HELMOND-001', 'EINDHOVEN-001', 'VETSBY-001'];
+                    const randomLocation = validLocations[Math.floor(Math.random() * validLocations.length)];
                     return JSON.stringify({
                         businessUnitCode: 'WH-TEST-' + new Date().getTime(),
-                        location: 'TEST-LOCATION-001',
-                        capacity: 500,
+                        location: randomLocation,
+                        capacity: 50,
                         stock: 0
                     });
                 }
                 if (method === 'PUT') {
+                    const validLocations = ['ZWOLLE-001', 'ZWOLLE-002', 'AMSTERDAM-001', 'AMSTERDAM-002', 'TILBURG-001', 'HELMOND-001', 'EINDHOVEN-001', 'VETSBY-001'];
+                    const randomLocation = validLocations[Math.floor(Math.random() * validLocations.length)];
                     return JSON.stringify({
                         businessUnitCode: 'WH-TEST-' + new Date().getTime(),
-                        location: 'TEST-LOCATION-001',
-                        capacity: 500,
+                        location: randomLocation,
+                        capacity: 50,
                         stock: 0
                     });
                 }
