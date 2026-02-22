@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation - Fulfillment System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .nav-tabs button {
+            padding: 10px 20px;
+            background: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tabs button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-tabs button.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .content {
+            display: grid;
+            gap: 20px;
+        }
+
+        .api-section {
+            display: none;
+        }
+
+        .api-section.active {
+            display: grid;
+            gap: 20px;
+        }
+
+        .endpoint-card {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #667eea;
+        }
+
+        .method-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.9em;
+            margin-right: 10px;
+        }
+
+        .method-get { background: #61affe; color: white; }
+        .method-post { background: #49cc90; color: white; }
+        .method-put { background: #fca130; color: white; }
+        .method-patch { background: #50e3c2; color: white; }
+        .method-delete { background: #f93e3e; color: white; }
+
+        .endpoint-path {
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #333;
+        }
+
+        .endpoint-description {
+            color: #666;
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        .params-section, .response-section, .examples-section {
+            margin-top: 15px;
+        }
+
+        .section-title {
+            font-size: 0.9em;
+            font-weight: bold;
+            color: #667eea;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .params-list, .response-list, .examples-list {
+            background: #f5f5f5;
+            padding: 12px;
+            border-radius: 4px;
+            border-left: 3px solid #667eea;
+        }
+
+        .param-item, .response-item {
+            margin: 8px 0;
+            padding: 8px;
+            background: white;
+            border-radius: 3px;
+            font-size: 0.95em;
+        }
+
+        .param-name, .response-type {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .param-type {
+            font-size: 0.85em;
+            color: #999;
+            font-style: italic;
+        }
+
+        .json-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 12px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            margin: 10px 0;
+            border: 1px solid #333;
+        }
+
+        .json-block::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .json-block::-webkit-scrollbar-track {
+            background: #333;
+        }
+
+        .json-block::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 3px;
+        }
+
+        .test-button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .test-button:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .response-box {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 12px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .response-box.show {
+            display: block;
+        }
+
+        .status-200 { color: #49cc90; font-weight: bold; }
+        .status-201 { color: #49cc90; font-weight: bold; }
+        .status-204 { color: #49cc90; font-weight: bold; }
+        .status-400 { color: #f93e3e; font-weight: bold; }
+        .status-404 { color: #f93e3e; font-weight: bold; }
+        .status-422 { color: #fca130; font-weight: bold; }
+        .status-500 { color: #f93e3e; font-weight: bold; }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-card i {
+            font-size: 2em;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .feature-card h3 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .feature-card p {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            padding: 20px;
+            opacity: 0.9;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+
+        .try-it-btn {
+            background: #49cc90;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .try-it-btn:hover {
+            background: #3ba870;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-cube"></i> Fulfillment System API</h1>
+            <p>Complete REST API Documentation</p>
+        </header>
+
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-number">6</div>
+                <div class="stat-label">Main Resources</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">20+</div>
+                <div class="stat-label">API Endpoints</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">CRUD</div>
+                <div class="stat-label">Operations</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">JSON</div>
+                <div class="stat-label">Response Format</div>
+            </div>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('products')"><i class="fas fa-box"></i> Products</button>
+            <button class="tab-btn" onclick="switchTab('stores')"><i class="fas fa-store"></i> Stores</button>
+            <button class="tab-btn" onclick="switchTab('warehouses')"><i class="fas fa-warehouse"></i> Warehouses</button>
+            <button class="tab-btn" onclick="switchTab('fulfillment')"><i class="fas fa-exchange-alt"></i> Fulfillment</button>
+            <button class="tab-btn" onclick="switchTab('monitoring')"><i class="fas fa-heartbeat"></i> Monitoring</button>
+            <button class="tab-btn" onclick="switchTab('health')"><i class="fas fa-check-circle"></i> Health</button>
+        </div>
+
+        <div class="content">
+            <!-- PRODUCTS SECTION -->
+            <div id="products" class="api-section active">
+                <h2 style="color: white; margin-bottom: 20px;"><i class="fas fa-box"></i> Product API</h2>
+
+                <div class="endpoint-card">
+                    <div>
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/product</span>
+                    </div>
+                    <div class="endpoint-description">List all products</div>
+
+                    <div class="response-section">
+                        <div class="section-title"><i class="fas fa-arrow-right"></i> Response (200 OK)</div>
+                        <div class="json-block">
+[
+  {
+    "id": 1,
+    "name": "KALLAX",
+    "description": "Shelving unit",
+    "price": 49.99,
+    "stock": 100
+  },
+  {
+    "id": 2,
+    "name": "BESTÅ",
+    "description": "TV unit",
+    "price": 299.99,
+    "stock": 50
+  }
+]
+                        </div>
+                    </div>
+                    <button class="try-it-btn" onclick="testAPI('GET', '/product')">Try It</button>
+                </div>
+
+                <div class="endpoint-card">
+                    <div>
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/product/{id}</span>
+                    </div>
+                    <div class="endpoint-description">Get a specific product by ID</div>
+
+                    <div class="params-section">
+                        <div class="section-title"><i class="fas fa-cogs"></i> Path Parameters</div>
+                        <div class="params-list">
+                            <div class="param-item"><span class="param-name">id</span> <span class="param-type">(number, required)</span> - Product ID</div>
+                        </div>
+                    </div>
+
+                    <div class="response-section">
+                        <div class="section-title"><i class="fas fa-arrow-right"></i> Response (200 OK)</div>
+                        <div class="json-block">
+{
+  "id": 1,
+  "name": "KALLAX",
+  "description": "Shelving unit",
+  "price": 49.99,
+  "stock": 100
+}
+                        </div>
+                    </div>
+                    <button class="try-it-btn" onclick="testAPI('GET', '/product/1')">Try It</button>
+                </div>
+
+                <div class="endpoint-card">
+                    <div>
+                        <span class="method-badge method-post">POST</span>
+                        <span class="endpoint-path">/product</span>
+                    </div>
+                    <div class="endpoint-description">Create a new product</div>
+
+                    <div class="params-section">
+                        <div class="section-title"><i class="fas fa-book"></i> Request Body</div>
+                        <div class="json-block">
+{
+  "name": "HEMNES",
+  "description": "Chest of drawers",
+  "price": 199.99,
+  "stock": 75
+}
+                        </div>
+                    </div>
+
+                    <div class="response-section">
+                        <div class="section-title"><i class="fas fa-arrow-right"></i> Response (201 Created)</div>
+                        <div class="json-block">
+{
+  "id": 3,
+  "name": "HEMNES",
+  "description": "Chest of drawers",
+  "price": 199.99,
+  "stock": 75
+}
+                        </div>
+                    </div>
+                    <button class="try-it-btn" onclick="testAPI('POST', '/product')">Try It</button>
+                </div>
+
+                <div class="endpoint-card">
+                    <div>
+                        <span class="method-badge method-put">PUT</span>
+                        <span class="endpoint-path">/product/{id}</span>
+                    </div>
+                    <div class="endpoint-description">Update an entire product</div>
+
+                    <div class="params-section">
+                        <div class="section-title"><i class="fas fa-cogs"></i> Path Parameters</div>
+                        <div class="params-list">
+                            <div class="param-item"><span class="param-name">id</span> <span class="param-type">(number, required)</span> - Product ID</div>
+                        </div>
+                    </div>
+
+                    <div class="params-section">
+                        <div class="section-title"><i class="fas fa-book"></i> Request Body</div>
+                        <div class="json-block">
+{
+  "name": "KALLAX Updated",
+  "description": "Updated shelving unit",
+  "price": 59.99,
+  "stock": 120
+}
+                        </div>
+                    </div>
+
+                    <div class="response-section">
+                        <div class="section-title"><i class="fas fa-arrow-right"></i> Response (200 OK)</div>
+                        <div class="json-block">
+{
+  "id": 1,
+  "name": "KALLAX Updated",
+  "description": "Updated shelving unit",
+  "price": 59.99,
+  "stock": 120
+}
+                        </div>
+                    </div>
+                    <button class="try-it-btn" onclick="testAPI('PUT', '/product/1')">Try It</button>
+                </div>
+
+                <div class="endpoint-card">
+                    <div>
+                        <span class="method-badge method-delete">DELETE</span>
+                        <span class="endpoint-path">/product/{id}</span>
+                    </div>
+                    <div class="endpoint-description">Delete a product</div>
+
+                    <div class="params-section">
+                        <div class="section-title"><i class="fas fa-cogs"></i> Path Parameters</div>
+                        <div class="params-list">
+                            <div class="param-item"><span class="param-name">id</span> <span class="param-type">(number, required)</span> - Product ID</div>
+                        </div>
+                    </div>
+
+                    <div class="response-section">
+                        <div class="section-title"><i class="fas fa-arrow-right"></i> Response (204 No Content)</div>
+                        <div class="json-block">Empty response body</div>
+                    </div>
+                    <button class="try-it-btn" onclick="testAPI('DELETE', '/product/1')">Try It</button>
+                </div>
+            </div>
+
+            <!-- STORES SECTION -->
+            <div id="stores" class="api-section">
+                <h2 style="color: white; margin-bottom: 20px;"><i class="fas fa-store"></i> Store API</h2>
+
+                <div class="endpoint-card">
+                    <div>
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/store</span>
+                    </div>
+                    <div class="endpoint-description">List all stores</div>
+
+                    <div class="response-section">
+                        <div class="section-title"><i class="fas fa-arrow-right"></i> Response (200 OK)</div>
+                        <div class="json-block">
+[
+  {
+    "id": 1,
+    "name": "IKEA AMSTERDAM",
+    "quantityProductsInStock": 500
+  },
+  {
+    "id": 2,
+    "name": "IKEA ROTTERDAM",
+    "quantityProductsInStock": 450
+  }
+]
+                        </div>
+                    </div>
+                    <button class="try-it-btn" onclick="testAPI('GET', '/store')">Try It</button>
+                </div>
+
+                <div class="endpoint-card">
+                    <div>
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/store/{id}</span>
+                    </div>
+                    <div class="endpoint-description">Get a specific store by ID</div>
+
+                    <div class="params-section">
+                        <div class="section-title"><i class="fas fa-cogs"></i> Path Parameters</div>
+                        <div class="params-list">
+                            <div class="param-item"><span class="param-name">id</span> <span class="param-type">(number, required)</span> - Store ID</div>
+                        </div>
+                    </div>
+
+                    <div class="response-section">
+                        <div class="section-title"><i class="fas fa-arrow-right"></i> Response (200 OK)</div>
+                        <div class="json-block">
+{
+  "id": 1,
+  "name": "IKEA AMSTERDAM",
+  "quantityProductsInStock": 500
+}
+                        </div>
+                    </div>
+                    <button class="try-it-btn" onclick="testAPI('GET', '/store/1')">Try It</button>
+                </div>
+
+                <div class="endpoint-card">
+                    <div>
+                        <span class="method-badge method-post">POST</span>
+                        <span class="endpoint-path">/store</span>
+                    </div>
+                    <div class="endpoint-description">Create a new store</div>
+
+                    <div class="params-section">
+                        <div class="section-title"><i class="fas fa-book"></i> Request Body</div>
+                        <div class="json-block">
+{
+  "name": "IKEA UTRECHT",
+  "quantityProductsInStock": 350
+}
+                        </div>
+                    </div>
+
+                    <div class="response-section">
+                        <div class="section-title"><i class="fas fa-arrow-right"></i> Response (201 Created)</div>
+                        <div class="json-block">
+{
+  "id": 3,
+  "name": "IKEA UTRECHT",
+  "quantityProductsInStock": 350
+}
+                        </div>
+                    </div>
+                    <button class="try-it-btn" onclick="testAPI('POST', '/store')">Try It</button>
+                </div>
+
+                <div class="endpoint-card">
+                    <div>
+                        <span class="method-badge method-put">PUT</span>
+                        <span class="endpoint-path">/store/{id}</span>
+                    </div>
+                    <div class="endpoint-description">Update an entire store</div>
+
+                    <div class="params-section">
+                        <div class="section-title"><i class="fas fa-cogs"></i> Path Parameters</div>
+                        <div class="params-list">
+                            <div class="param-item"><span class="param-name">id</span> <span class="param-type">(number, required)</span> - Store ID</div>
+                        </div>
+                    </div>
+
+                    <div class="params-section">
+                        <div class="section-title"><i class="fas fa-book"></i> Request Body</div>
+                        <div class="json-block">
+{
+  "name": "IKEA AMSTERDAM Updated",
+  "quantityProductsInStock": 550
+}
+                        </div>
+                    </div>
+
+                    <div class="response-section">
+                        <div class="section-title"><i class="fas fa-arrow-right"></i> Response (200 OK)</div>
+                        <div class="json-block">
+{
+  "id": 1,
+  "name": "IKEA AMSTERDAM Updated",
+  "quantityProductsInStock": 550
+}
+                        </div>
+                    </div>
+                    <button class="try-it-btn" onclick="testAPI('PUT', '/store/1')">Try It</button>
+                </div>
+
+                <div class="endpoint-card">
+                    <div>
+                        <span class="method-badge method-patch">PATCH</span>
+                        <span class="endpoint-path">/store/{id}</span>
+                    </div>
+                    <div class="endpoint-description">Partially update a store</div>
+
+                    <div class="params-section">
+                        <div class="section-title"><i class="fas fa-cogs"></i> Path Parameters</div>
+                        <div class="params-list">
+                            <div class="param-item"><span class="param-name">id</span> <span class="param-type">(number, required)</span> - Store ID</div>
+                        </div>
+                    </div>
+
+                    <div class="params-section">
+                        <div class="section-title"><i class="fas fa-book"></i> Request Body (Only update what you need)</div>
+                        <div class="json-block">
+{
+  "quantityProductsInStock": 600
+}
+                        </div>
+                    </div>
+
+                    <div class="response-section">
+                        <div class="section-title"><i class="fas fa-arrow-right"></i> Response (200 OK)</div>
+                        <div class="json-block">
+{
+  "id": 1,
+  "name": "IKEA AMSTERDAM",
+  "quantityProductsInStock": 600
+}
+                        </div>
+                    </div>
+                    <button class="try-it-btn" onclick="testAPI('PATCH', '/store/1')">Try It</button>
+                </div>
+
+                <div class="endpoint-card">
+                    <div>
+                        <span class="method-badge method-delete">DELETE</span>
+                        <span class="endpoint-path">/store/{id}</span>
+                    </div>
+                    <div class="endpoint-description">Delete a store</div>
+
+                    <div class="params-section">
+                        <div class="section-title"><i class="fas fa-cogs"></i> Path Parameters</div>
+                        <div class="params-list">
+                            <div class="param-item"><span class="param-name">id</span> <span class="param-type">(number, required)</span> - Store ID</div>
+                        </div>
+                    </div>
+
+                    <div class="response-section">
+                        <div class="section-title"><i class="fas fa-arrow-right"></i> Response (204 No Content)</div>
+                        <div class="json-block">Empty response body</div>
+                    </div>
+                    <button class="try-it-btn" onclick="testAPI('DELETE', '/store/1')">Try It</button>
+                </div>
+            </div>
+
+            <!-- WAREHOUSES SECTION -->
+            <div id="warehouses" class="api-section">
+                <h2 style="color: white; margin-bottom: 20px;"><i class="fas fa-warehouse"></i> Warehouse API</h2>
+
+                <div class="endpoint-card">
+                    <div>
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/warehouse</span>
+                    </div>
+                    <div class="endpoint-description">List all warehouses</div>
+
+                    <div class="response-section">
+                        <div class="section-title"><i class="fas fa-arrow-right"></i> Response (200 OK)</div>
+                        <div class="json-block">
+[
+  {
+    "id": "wh-001",
+    "businessUnitCode": "WH-AMSTERDAM-001",
+    "location": "AMSTERDAM-001",
+    "capacity": 1000,
+    "stock": 850
+  }
+]
+                        </div>
+                    </div>
+                    <button class="try-it-btn" onclick="testAPI('GET', '/warehouse')">Try It</button>
+                </div>
+
+                <div class="endpoint-card">
+                    <div>
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/warehouse/{businessUnitCode}</span>
+                    </div>
+                    <div class="endpoint-description">Get a specific warehouse by business unit code</div>
+
+                    <div class="params-section">
+                        <div class="section-title"><i class="fas fa-cogs"></i> Path Parameters</div>
+                        <div class="params-list">
+                            <div class="param-item"><span class="param-name">businessUnitCode</span> <span class="param-type">(string, required)</span> - Warehouse business unit code</div>
+                        </div>
+                    </div>
+
+                    <div class="response-section">
+                        <div class="section-title"><i class="fas fa-arrow-right"></i> Response (200 OK)</div>
+                        <div class="json-block">
+{
+  "id": "wh-001",
+  "businessUnitCode": "WH-AMSTERDAM-001",
+  "location": "AMSTERDAM-001",
+  "capacity": 1000,
+  "stock": 850
+}
+                        </div>
+                    </div>
+                    <button class="try-it-btn" onclick="testAPI('GET', '/warehouse/WH-AMSTERDAM-001')">Try It</button>
+                </div>
+
+                <div class="endpoint-card">
+                    <div>
+                        <span class="method-badge method-post">POST</span>
+                        <span class="endpoint-path">/warehouse</span>
+                    </div>
+                    <div class="endpoint-description">Create a new warehouse</div>
+
+                    <div class="params-section">
+                        <div class="section-title"><i class="fas fa-book"></i> Request Body</div>
+                        <div class="json-block">
+{
+  "businessUnitCode": "WH-ROTTERDAM-001",
+  "location": "ROTTERDAM-001",
+  "capacity": 800,
+  "stock": 0
+}
+                        </div>
+                    </div>
+
+                    <div class="response-section">
+                        <div class="section-title"><i class="fas fa-arrow-right"></i> Response (201 Created)</div>
+                        <div class="json-block">
+{
+  "id": "wh-002",
+  "businessUnitCode": "WH-ROTTERDAM-001",
+  "location": "ROTTERDAM-001",
+  "capacity": 800,
+  "stock": 0
+}
+                        </div>
+                    </div>
+                    <button class="try-it-btn" onclick="testAPI('POST', '/warehouse')">Try It</button>
+                </div>
+
+                <div class="endpoint-card">
+                    <div>
+                        <span class="method-badge method-put">PUT</span>
+                        <span class="endpoint-path">/warehouse/{businessUnitCode}/replacement</span>
+                    </div>
+                    <div class="endpoint-description">Replace/archive a warehouse with a new one</div>
+
+                    <div class="params-section">
+                        <div class="section-title"><i class="fas fa-cogs"></i> Path Parameters</div>
+                        <div class="params-list">
+                            <div class="param-item"><span class="param-name">businessUnitCode</span> <span class="param-type">(string, required)</span> - Old warehouse code</div>
+                        </div>
+                    </div>
+
+                    <div class="params-section">
+                        <div class="section-title"><i class="fas fa-book"></i> Request Body</div>
+                        <div class="json-block">
+{
+  "businessUnitCode": "WH-ROTTERDAM-002",
+  "location": "ROTTERDAM-002",
+  "capacity": 900
+}
+                        </div>
+                    </div>
+
+                    <div class="response-section">
+                        <div class="section-title"><i class="fas fa-arrow-right"></i> Response (200 OK)</div>
+                        <div class="json-block">
+{
+  "id": "wh-003",
+  "businessUnitCode": "WH-ROTTERDAM-002",
+  "location": "ROTTERDAM-002",
+  "capacity": 900,
+  "stock": 0
+}
+                        </div>
+                    </div>
+                    <button class="try-it-btn" onclick="testAPI('PUT', '/warehouse/WH-AMSTERDAM-001/replacement')">Try It</button>
+                </div>
+            </div>
+
+            <!-- FULFILLMENT SECTION -->
+            <div id="fulfillment" class="api-section">
+                <h2 style="color: white; margin-bottom: 20px;"><i class="fas fa-exchange-alt"></i> Fulfillment API</h2>
+
+                <div class="endpoint-card">
+                    <div>
+                        <span class="method-badge method-post">POST</span>
+                        <span class="endpoint-path">/fulfillment/associate</span>
+                    </div>
+                    <div class="endpoint-description">Associate a warehouse to a product in a store</div>
+
+                    <div class="params-section">
+                        <div class="section-title"><i class="fas fa-book"></i> Request Body</div>
+                        <div class="json-block">
+{
+  "warehouseCode": "WH-AMSTERDAM-001",
+  "productId": 1,
+  "storeId": 1
+}
+                        </div>
+                    </div>
+
+                    <div class="response-section">
+                        <div class="section-title"><i class="fas fa-arrow-right"></i> Response (201 Created)</div>
+                        <div class="json-block">
+{
+  "id": "assoc-001",
+  "warehouseCode": "WH-AMSTERDAM-001",
+  "productId": 1,
+  "storeId": 1,
+  "associatedAt": "2026-02-22T10:30:00Z"
+}
+                        </div>
+                    </div>
+                    <button class="try-it-btn" onclick="testAPI('POST', '/fulfillment/associate')">Try It</button>
+                </div>
+
+                <div class="endpoint-card">
+                    <div>
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/fulfillment/product/{productId}/store/{storeId}</span>
+                    </div>
+                    <div class="endpoint-description">Get warehouses associated with a product in a store</div>
+
+                    <div class="params-section">
+                        <div class="section-title"><i class="fas fa-cogs"></i> Path Parameters</div>
+                        <div class="params-list">
+                            <div class="param-item"><span class="param-name">productId</span> <span class="param-type">(number, required)</span> - Product ID</div>
+                            <div class="param-item"><span class="param-name">storeId</span> <span class="param-type">(number, required)</span> - Store ID</div>
+                        </div>
+                    </div>
+
+                    <div class="response-section">
+                        <div class="section-title"><i class="fas fa-arrow-right"></i> Response (200 OK)</div>
+                        <div class="json-block">
+[
+  {
+    "warehouseCode": "WH-AMSTERDAM-001",
+    "location": "AMSTERDAM-001",
+    "capacity": 1000,
+    "stock": 850
+  }
+]
+                        </div>
+                    </div>
+                    <button class="try-it-btn" onclick="testAPI('GET', '/fulfillment/product/1/store/1')">Try It</button>
+                </div>
+
+                <div class="endpoint-card">
+                    <div>
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/fulfillment/associations</span>
+                    </div>
+                    <div class="endpoint-description">List all warehouse-product-store associations</div>
+
+                    <div class="response-section">
+                        <div class="section-title"><i class="fas fa-arrow-right"></i> Response (200 OK)</div>
+                        <div class="json-block">
+[
+  {
+    "id": "assoc-001",
+    "warehouseCode": "WH-AMSTERDAM-001",
+    "productId": 1,
+    "storeId": 1,
+    "associatedAt": "2026-02-22T10:30:00Z"
+  }
+]
+                        </div>
+                    </div>
+                    <button class="try-it-btn" onclick="testAPI('GET', '/fulfillment/associations')">Try It</button>
+                </div>
+            </div>
+
+            <!-- MONITORING SECTION -->
+            <div id="monitoring" class="api-section">
+                <h2 style="color: white; margin-bottom: 20px;"><i class="fas fa-heartbeat"></i> System Monitoring API</h2>
+
+                <div class="endpoint-card">
+                    <div>
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/monitoring/metrics</span>
+                    </div>
+                    <div class="endpoint-description">Get detailed system metrics (CPU, Memory, Threads)</div>
+
+                    <div class="response-section">
+                        <div class="section-title"><i class="fas fa-arrow-right"></i> Response (200 OK)</div>
+                        <div class="json-block">
+{
+  "timestamp": "2026-02-22T10:30:00Z",
+  "cpu": {
+    "processUsage": "15.30%",
+    "systemUsage": "45.20%",
+    "availableProcessors": 8
+  },
+  "heapMemory": {
+    "used": "256 MB",
+    "usedBytes": 268435456,
+    "max": "512 MB",
+    "maxBytes": 536870912,
+    "usagePercent": "50.00%"
+  },
+  "threads": {
+    "active": 25,
+    "peak": 30,
+    "totalStarted": 150
+  }
+}
+                        </div>
+                    </div>
+                    <button class="try-it-btn" onclick="testAPI('GET', '/monitoring/metrics')">Try It</button>
+                </div>
+
+                <div class="endpoint-card">
+                    <div>
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/monitoring.html</span>
+                    </div>
+                    <div class="endpoint-description">View interactive monitoring dashboard</div>
+
+                    <div class="endpoint-description" style="margin-top: 15px;">
+                        <strong>Features:</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li>Real-time CPU usage monitoring</li>
+                            <li>Heap and non-heap memory tracking</li>
+                            <li>Thread count visualization</li>
+                            <li>Auto-refresh every 5 seconds</li>
+                            <li>Manual refresh and pause controls</li>
+                        </ul>
+                    </div>
+                    <button class="try-it-btn" onclick="window.open('/monitoring.html', '_blank')">Open Dashboard</button>
+                </div>
+            </div>
+
+            <!-- HEALTH SECTION -->
+            <div id="health" class="api-section">
+                <h2 style="color: white; margin-bottom: 20px;"><i class="fas fa-check-circle"></i> Health Check API</h2>
+
+                <div class="endpoint-card">
+                    <div>
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/monitoring/health</span>
+                    </div>
+                    <div class="endpoint-description">Get application health status</div>
+
+                    <div class="response-section">
+                        <div class="section-title"><i class="fas fa-arrow-right"></i> Response (200 OK)</div>
+                        <div class="json-block">
+{
+  "status": "UP",
+  "checks": [
+    {
+      "name": "Database",
+      "status": "UP",
+      "details": "PostgreSQL database connection active"
+    },
+    {
+      "name": "Disk Space",
+      "status": "UP",
+      "details": "Sufficient disk space available"
+    },
+    {
+      "name": "Memory",
+      "status": "UP",
+      "details": "Memory usage within normal range"
+    }
+  ],
+  "timestamp": "2026-02-22T10:30:00Z"
+}
+                        </div>
+                    </div>
+                    <button class="try-it-btn" onclick="testAPI('GET', '/monitoring/health')">Try It</button>
+                </div>
+
+                <div class="endpoint-card">
+                    <div>
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/q/health</span>
+                    </div>
+                    <div class="endpoint-description">Get Quarkus health status (simplified)</div>
+
+                    <div class="response-section">
+                        <div class="section-title"><i class="fas fa-arrow-right"></i> Response (200 OK)</div>
+                        <div class="json-block">
+{
+  "status": "UP"
+}
+                        </div>
+                    </div>
+                    <button class="try-it-btn" onclick="testAPI('GET', '/q/health')">Try It</button>
+                </div>
+
+                <div class="endpoint-card">
+                    <div>
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/q/health/live</span>
+                    </div>
+                    <div class="endpoint-description">Get application liveness probe (is app alive?)</div>
+
+                    <div class="response-section">
+                        <div class="section-title"><i class="fas fa-arrow-right"></i> Response (200 OK)</div>
+                        <div class="json-block">
+{
+  "status": "UP"
+}
+                        </div>
+                    </div>
+                    <button class="try-it-btn" onclick="testAPI('GET', '/q/health/live')">Try It</button>
+                </div>
+
+                <div class="endpoint-card">
+                    <div>
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/q/health/ready</span>
+                    </div>
+                    <div class="endpoint-description">Get application readiness probe (is app ready for traffic?)</div>
+
+                    <div class="response-section">
+                        <div class="section-title"><i class="fas fa-arrow-right"></i> Response (200 OK)</div>
+                        <div class="json-block">
+{
+  "status": "UP"
+}
+                        </div>
+                    </div>
+                    <button class="try-it-btn" onclick="testAPI('GET', '/q/health/ready')">Try It</button>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p><i class="fas fa-code"></i> Fulfillment System API v1.0.0</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">Base URL: http://localhost:8080</p>
+            <p style="margin-top: 20px; opacity: 0.7;">All endpoints require JSON format | Status codes: 200 (OK), 201 (Created), 204 (No Content), 400 (Bad Request), 404 (Not Found), 422 (Unprocessable Entity), 500 (Server Error)</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchTab(tabId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.api-section');
+            sections.forEach(section => section.classList.remove('active'));
+
+            // Remove active class from all buttons
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(button => button.classList.remove('active'));
+
+            // Show selected section
+            document.getElementById(tabId).classList.add('active');
+
+            // Add active class to clicked button
+            event.target.closest('.tab-btn').classList.add('active');
+        }
+
+        function testAPI(method, endpoint) {
+            const button = event.target;
+            button.disabled = true;
+            button.textContent = 'Loading...';
+
+            // Determine request options based on method
+            const options = {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+
+            // Add sample body for POST, PUT, PATCH
+            if (method === 'POST' || method === 'PUT' || method === 'PATCH') {
+                options.body = getRequestBody(endpoint, method);
+            }
+
+            fetch(endpoint, options)
+                .then(response => {
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        return response.json().then(data => ({
+                            status: response.status,
+                            statusText: response.statusText,
+                            data: data
+                        }));
+                    } else {
+                        return {
+                            status: response.status,
+                            statusText: response.statusText,
+                            data: null
+                        };
+                    }
+                })
+                .then(result => {
+                    showResponse(button, result, method, endpoint);
+                })
+                .catch(error => {
+                    showError(button, error, method, endpoint);
+                })
+                .finally(() => {
+                    button.disabled = false;
+                    button.textContent = 'Try It';
+                });
+        }
+
+        function getRequestBody(endpoint, method) {
+            // Sample request bodies based on endpoint
+            if (endpoint.includes('/product') && !endpoint.includes('{id}')) {
+                if (method === 'POST') {
+                    return JSON.stringify({
+                        name: 'Sample Product ' + new Date().getTime(),
+                        description: 'Sample product for testing',
+                        price: 99.99,
+                        stock: 50
+                    });
+                }
+            }
+            if (endpoint.includes('/store') && !endpoint.includes('{id}')) {
+                if (method === 'POST') {
+                    return JSON.stringify({
+                        name: 'Sample Store ' + new Date().getTime(),
+                        quantityProductsInStock: 100
+                    });
+                }
+            }
+            if (endpoint.includes('/warehouse') && !endpoint.includes('{businessUnitCode}') && !endpoint.includes('/replacement')) {
+                if (method === 'POST') {
+                    return JSON.stringify({
+                        businessUnitCode: 'WH-TEST-' + new Date().getTime(),
+                        location: 'TEST-LOCATION-001',
+                        capacity: 500,
+                        stock: 0
+                    });
+                }
+            }
+            if (endpoint.includes('/fulfillment/associate')) {
+                return JSON.stringify({
+                    warehouseCode: 'WH-AMSTERDAM-001',
+                    productId: 1,
+                    storeId: 1
+                });
+            }
+
+            return JSON.stringify({});
+        }
+
+        function showResponse(button, result, method, endpoint) {
+            const card = button.closest('.endpoint-card');
+            let responseBox = card.querySelector('.response-box');
+
+            if (!responseBox) {
+                responseBox = document.createElement('div');
+                responseBox.className = 'response-box';
+                card.appendChild(responseBox);
+            }
+
+            const statusClass = result.status >= 200 && result.status < 300 ? 'status-200' : 'status-400';
+
+            let responseContent = `
+                <div style="margin-bottom: 10px;">
+                    <strong>Status: </strong><span class="${statusClass}">${result.status} ${result.statusText}</span>
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <strong>Method: </strong><span style="color: #667eea;">${method}</span>
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <strong>Endpoint: </strong><code style="background: #f5f5f5; padding: 2px 5px; border-radius: 3px;">${endpoint}</code>
+                </div>
+                <div style="margin-top: 15px;">
+                    <strong>Response Body:</strong>
+                    <div class="json-block" style="margin-top: 10px;">
+                        ${result.data ? JSON.stringify(result.data, null, 2) : '(Empty body)'}
+                    </div>
+                </div>
+            `;
+
+            responseBox.innerHTML = responseContent;
+            responseBox.classList.add('show');
+        }
+
+        function showError(button, error, method, endpoint) {
+            const card = button.closest('.endpoint-card');
+            let responseBox = card.querySelector('.response-box');
+
+            if (!responseBox) {
+                responseBox = document.createElement('div');
+                responseBox.className = 'response-box';
+                card.appendChild(responseBox);
+            }
+
+            let errorMessage = error.message;
+            if (error.message.includes('Failed to fetch')) {
+                errorMessage = 'Could not connect to the server. Make sure the application is running at http://localhost:8080';
+            }
+
+            let responseContent = `
+                <div style="margin-bottom: 10px;">
+                    <strong>Error: </strong><span style="color: #f93e3e;">${errorMessage}</span>
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <strong>Method: </strong><span style="color: #667eea;">${method}</span>
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <strong>Endpoint: </strong><code style="background: #f5f5f5; padding: 2px 5px; border-radius: 3px;">${endpoint}</code>
+                </div>
+                <div style="margin-top: 15px; padding: 10px; background: #ffe6e6; border-left: 3px solid #f93e3e; border-radius: 3px;">
+                    <strong>Tip:</strong> Make sure the application is running. Start it with: <code>mvn quarkus:dev</code>
+                </div>
+            `;
+
+            responseBox.innerHTML = responseContent;
+            responseBox.classList.add('show');
+        }
+
+        // Smooth scroll behavior
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+

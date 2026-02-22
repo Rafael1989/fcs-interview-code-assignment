@@ -1,153 +1,347 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta charset="utf-8"/>
-    <title>Hibernate ORM with Panache quickstart - Quarkus</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/wingcss/0.1.8/wing.min.css"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fulfillment System - Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        input[type=number] {
-            width: 100%;
-            padding: 12px 20px;
-            margin: 8px 0;
-            display: inline-block;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+        * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
-            -webkit-transition: .5s;
-            transition: .5s;
-            outline: 0;
-            font-family: 'Open Sans', serif;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .card i {
+            font-size: 3em;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .card h2 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        .card p {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .btn:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #764ba2;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+
+        .quick-links {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+        }
+
+        .quick-links h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .link-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            background: #f5f5f5;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .link-item:hover {
+            background: #667eea;
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .link-item i {
+            font-size: 1.3em;
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            padding: 20px;
+            opacity: 0.8;
+        }
+
+        .features-list {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .features-list h3 {
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .features-list ul {
+            list-style: none;
+            column-count: 2;
+            column-gap: 30px;
+        }
+
+        .features-list li {
+            margin-bottom: 12px;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .features-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #49cc90;
+            font-weight: bold;
         }
     </style>
-    <!-- Load AngularJS -->
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
-    <script type="text/javascript">
-      var app = angular.module("ProductManagement", []);
-
-      //Controller Part
-      app.controller("ProductManagementController", function ($scope, $http) {
-
-        //Initialize page with default data which is blank in this example
-        $scope.products = [];
-
-        $scope.form = {
-          id: -1,
-          name: ""
-        };
-
-        //Now load the data from server
-        _refreshPageData();
-
-        //HTTP POST/PUT methods for add/edit products
-        $scope.update = function () {
-          var method = "";
-          var url = "";
-          var data = {};
-          if ($scope.form.id == -1) {
-            //Id is absent so add products - POST operation
-            method = "POST";
-            url = '/product';
-            data.name = $scope.form.name;
-          } else {
-            //If Id is present, it's edit operation - PUT operation
-            method = "PUT";
-            url = '/product/' + $scope.form.id;
-            data.name = $scope.form.name;
-          }
-
-          $http({
-            method: method,
-            url: url,
-            data: angular.toJson(data),
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          }).then(_success, _error);
-        };
-
-        //HTTP DELETE- delete product by id
-        $scope.remove = function (product) {
-          $http({
-            method: 'DELETE',
-            url: '/product/' + product.id
-          }).then(_success, _error);
-        };
-
-        //In case of edit products, populate form with product data
-        $scope.edit = function (product) {
-          $scope.form.name = product.name;
-          $scope.form.id = product.id;
-        };
-
-          /* Private Methods */
-        //HTTP GET- get all products collection
-        function _refreshPageData() {
-          $http({
-            method: 'GET',
-            url: '/product'
-          }).then(function successCallback(response) {
-            $scope.products = response.data;
-          }, function errorCallback(response) {
-            console.log(response.statusText);
-          });
-        }
-
-        function _success(response) {
-          _refreshPageData();
-          _clearForm()
-        }
-
-        function _error(response) {
-          alert(response.data.message || response.statusText);
-        }
-
-        //Clear the form
-        function _clearForm() {
-          $scope.form.name = "";
-          $scope.form.id = -1;
-        }
-      });
-    </script>
 </head>
-<body ng-app="ProductManagement" ng-controller="ProductManagementController">
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-cube"></i> Fulfillment System</h1>
+            <p>Complete Management Platform</p>
+        </header>
 
-<div class="container">
-    <h1>Java Code Assignment</h1>
-    <p>This application demonstrates how a Quarkus application implements a CRUD endpoint to manage products using Hibernate ORM with Panache.
-        This management interface invokes the CRUD service endpoint, which interacts with a database using JPA and several other well known libraries.
-    </p>
-
-    <h3>Add/Edit an Product to the Warehouse</h3>
-    <form ng-submit="update()">
-        <div class="row">
-            <div class="col-6"><input type="text" placeholder="Name" ng-model="form.name" size="60"/></div>
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-number">6</div>
+                <div class="stat-label">Main Modules</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">20+</div>
+                <div class="stat-label">API Endpoints</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">PostgreSQL</div>
+                <div class="stat-label">Database</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">Quarkus</div>
+                <div class="stat-label">Framework</div>
+            </div>
         </div>
-        <input type="submit" value="Save"/>
-    </form>
 
-    <h3>Product List</h3>
-    <div class="row">
-        <div class="col-2">Name</div>
-    </div>
-    <div class="row" ng-repeat="product in products">
-        <div class="col-2">{{ product.name }}</div>
-        <div class="col-8"><a ng-click="edit( product )" class="btn">Edit</a> <a ng-click="remove( product )" class="btn">Remove</a>
+        <div class="features-list">
+            <h3><i class="fas fa-star"></i> System Features</h3>
+            <ul>
+                <li>Product Management with CRUD operations</li>
+                <li>Store management across multiple locations</li>
+                <li>Warehouse inventory tracking</li>
+                <li>Fulfillment and order processing</li>
+                <li>Real-time system monitoring</li>
+                <li>Health check endpoints</li>
+                <li>Location-based constraints</li>
+                <li>Transaction management with Panache ORM</li>
+                <li>RESTful API with JSON</li>
+                <li>Comprehensive error handling</li>
+                <li>Logging and audit trails</li>
+                <li>JaCoCo code coverage tracking</li>
+            </ul>
         </div>
+
+        <div class="grid">
+            <div class="card">
+                <i class="fas fa-box"></i>
+                <h2>Products</h2>
+                <p>Manage products with prices, descriptions, and stock levels across your inventory system.</p>
+                <a href="apis.html#products" class="btn">View API</a>
+            </div>
+
+            <div class="card">
+                <i class="fas fa-store"></i>
+                <h2>Stores</h2>
+                <p>Handle store locations, inventory counts, and product associations for retail operations.</p>
+                <a href="apis.html#stores" class="btn">View API</a>
+            </div>
+
+            <div class="card">
+                <i class="fas fa-warehouse"></i>
+                <h2>Warehouses</h2>
+                <p>Manage warehouse capacity, locations, and inventory distribution across facilities.</p>
+                <a href="apis.html#warehouses" class="btn">View API</a>
+            </div>
+
+            <div class="card">
+                <i class="fas fa-exchange-alt"></i>
+                <h2>Fulfillment</h2>
+                <p>Associate warehouses with products in stores to optimize order fulfillment processes.</p>
+                <a href="apis.html#fulfillment" class="btn">View API</a>
+            </div>
+
+            <div class="card">
+                <i class="fas fa-heartbeat"></i>
+                <h2>Monitoring</h2>
+                <p>Real-time system metrics including CPU, memory, and thread usage monitoring.</p>
+                <a href="apis.html#monitoring" class="btn">View API</a>
+            </div>
+
+            <div class="card">
+                <i class="fas fa-check-circle"></i>
+                <h2>Health Checks</h2>
+                <p>Application health status, readiness probes, and liveness indicators for Kubernetes.</p>
+                <a href="apis.html#health" class="btn">View API</a>
+            </div>
+        </div>
+
+        <div class="quick-links">
+            <h3><i class="fas fa-link"></i> Quick Links</h3>
+            <div class="links-grid">
+                <a href="apis.html" class="link-item">
+                    <i class="fas fa-book"></i>
+                    <span>Complete API Documentation</span>
+                </a>
+                <a href="monitoring.html" class="link-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>System Monitoring Dashboard</span>
+                </a>
+                <a href="/q/swagger-ui/" class="link-item">
+                    <i class="fas fa-cube"></i>
+                    <span>Swagger/OpenAPI UI</span>
+                </a>
+                <a href="/q/health" class="link-item">
+                    <i class="fas fa-medkit"></i>
+                    <span>Health Status</span>
+                </a>
+                <a href="apis.html#products" class="link-item">
+                    <i class="fas fa-flask"></i>
+                    <span>Try Product API</span>
+                </a>
+                <a href="https://github.com/Rafael1989/fcs-interview-code-assignment" class="link-item" target="_blank">
+                    <i class="fas fa-github"></i>
+                    <span>View on GitHub</span>
+                </a>
+            </div>
+        </div>
+
+        <footer>
+            <p><i class="fas fa-code"></i> Fulfillment System v1.0.0 | Powered by Quarkus</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">Built with: Java 17 • Quarkus 3.13.3 • PostgreSQL • Hibernate ORM • RESTEasy</p>
+        </footer>
     </div>
-
-    <p>Behind the scenes, we have:
-        <ul>
-            <li>Hibernate ORM with Panache taking care of all CRUD operations</li>
-            <li>RESTEasy powering the REST API</li>
-            <li>ArC, a CDI based dependency injection framework</li>
-            <li>the Narayana Transaction Manager coordinating all transactions</li>
-            <li>Agroal, the high performance Datasource implementation</li>
-            <li>Infinispan used as Hibernate 2nd level caching: enabled on both entities and queries</li>
-            <li>The Undertow webserver</li>
-            <li>Some magic bytecode generation plugged in the compiler...</li>
-        </ul>
-    </p>
-</div>
-
 </body>
 </html>
