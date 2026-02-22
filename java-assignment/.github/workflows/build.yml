@@ -32,7 +32,23 @@ jobs:
 
     - name: List coverage files
       working-directory: ./java-assignment
-      run: find target -name "jacoco*" -type f
+      run: |
+        echo "=== JaCoCo Files ===" 
+        find target -name "jacoco*" -type f
+        echo ""
+        echo "=== Target Directory Structure ==="
+        ls -la target/site/jacoco/ 2>/dev/null || echo "Directory not found"
+
+    - name: Check JaCoCo XML exists
+      working-directory: ./java-assignment
+      run: |
+        if [ -f target/site/jacoco/jacoco.xml ]; then
+          echo "✓ jacoco.xml found"
+          echo "File size: $(wc -c < target/site/jacoco/jacoco.xml) bytes"
+        else
+          echo "✗ jacoco.xml NOT found - checking alternatives..."
+          find target -name "*.xml" -type f | head -20
+        fi
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
