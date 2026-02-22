@@ -1089,33 +1089,61 @@
                 // Replace placeholders with real IDs
                 let finalEndpoint = endpoint;
 
-                // Count how many {id} placeholders we need to replace
-                const idMatches = endpoint.match(/{id}/g) || [];
+                // Determine which resource type this endpoint is for
+                const isProductEndpoint = endpoint.includes('/product');
+                const isStoreEndpoint = endpoint.includes('/store') && !endpoint.includes('/product');
+                const isFulfillmentEndpoint = endpoint.includes('/fulfillment');
                 const hasBusinessUnitCode = endpoint.includes('{businessUnitCode}');
 
-                // Get product IDs if needed
-                if (idMatches.length > 0) {
+                // Handle product endpoints
+                if (isProductEndpoint && !isFulfillmentEndpoint) {
                     const productId = await getFirstItemId('/product');
                     if (productId) {
-                        // Replace all {id} with the same productId for simplicity
                         finalEndpoint = finalEndpoint.replace(/{id}/g, productId);
                     } else {
                         throw new Error('No products found. Please create a product first.');
                     }
                 }
 
-                // Get store ID for fulfillment endpoints
-                if (endpoint.includes('/fulfillment/product')) {
+                // Handle store endpoints
+                if (isStoreEndpoint && !isFulfillmentEndpoint) {
                     const storeId = await getFirstItemId('/store');
                     if (storeId) {
-                        // Replace the second {id} (store) with the store ID
-                        let parts = finalEndpoint.split('/store/');
-                        finalEndpoint = parts[0] + '/store/' + storeId;
+                        finalEndpoint = finalEndpoint.replace(/{id}/g, storeId);
                     } else {
                         throw new Error('No stores found. Please create a store first.');
                     }
                 }
 
+                // Handle fulfillment endpoints with multiple IDs
+                if (isFulfillmentEndpoint && endpoint.includes('{id}')) {
+                    const productId = await getFirstItemId('/product');
+                    const storeId = await getFirstItemId('/store');
+
+                    if (!productId) {
+                        throw new Error('No products found. Please create a product first.');
+                    }
+                    if (!storeId) {
+                        throw new Error('No stores found. Please create a store first.');
+                    }
+
+                    // Replace first {id} with product, second with store
+                    let parts = finalEndpoint.split('/');
+                    let replacedFirst = false;
+                    finalEndpoint = parts.map(part => {
+                        if (part === '{id}') {
+                            if (!replacedFirst) {
+                                replacedFirst = true;
+                                return productId;
+                            } else {
+                                return storeId;
+                            }
+                        }
+                        return part;
+                    }).join('/');
+                }
+
+                // Handle warehouse endpoints
                 if (hasBusinessUnitCode) {
                     const warehouseCode = await getFirstItemId('/warehouse');
                     if (warehouseCode) {
