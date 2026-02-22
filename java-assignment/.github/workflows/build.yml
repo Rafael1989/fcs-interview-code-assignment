@@ -26,10 +26,6 @@ jobs:
       working-directory: ./java-assignment
       run: mvn clean verify -DskipITs=true
 
-    - name: Generate JaCoCo Report
-      working-directory: ./java-assignment
-      run: mvn jacoco:report
-
     - name: List coverage files
       working-directory: ./java-assignment
       run: |
@@ -54,11 +50,9 @@ jobs:
       uses: codecov/codecov-action@v4
       with:
         files: ./java-assignment/target/site/jacoco/jacoco.xml
-        flags: unittests
-        name: codecov-umbrella
-        fail_ci_if_error: false
+        fail_ci_if_error: true
         verbose: true
-        token: ${{ secrets.CODECOV_TOKEN }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Upload Test Results
       if: always()
