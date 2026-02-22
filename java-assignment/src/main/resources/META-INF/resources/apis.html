@@ -1200,6 +1200,43 @@
             return null;
         }
 
+        async function getAvailableLocation() {
+            try {
+                const response = await fetch('/warehouse');
+                const warehouses = await response.json();
+
+                const validLocations = {
+                    'ZWOLLE-001': 1,
+                    'ZWOLLE-002': 2,
+                    'AMSTERDAM-001': 5,
+                    'AMSTERDAM-002': 3,
+                    'TILBURG-001': 1,
+                    'HELMOND-001': 1,
+                    'EINDHOVEN-001': 2,
+                    'VETSBY-001': 1
+                };
+
+                // Count warehouses per location (only active ones, not archived)
+                const locationCounts = {};
+                for (const location of Object.keys(validLocations)) {
+                    locationCounts[location] = warehouses.filter(w => w.location === location && !w.archivedAt).length;
+                }
+
+                // Find a location with available space
+                for (const [location, maxWarehouses] of Object.entries(validLocations)) {
+                    if ((locationCounts[location] || 0) < maxWarehouses) {
+                        return location;
+                    }
+                }
+
+                // If all are full, return the first one (will get error but shows the constraint)
+                return 'AMSTERDAM-002';
+            } catch (error) {
+                console.log('Error getting available location', error);
+                return 'AMSTERDAM-002'; // fallback
+            }
+        }
+
         async function getRequestBody(endpoint, method) {
             // Sample request bodies based on endpoint and method
 
@@ -1240,31 +1277,28 @@
             // WAREHOUSE endpoints
             if (endpoint.includes('/warehouse')) {
                 if (endpoint.includes('/replacement')) {
-                    const validLocations = ['ZWOLLE-001', 'ZWOLLE-002', 'AMSTERDAM-001', 'AMSTERDAM-002', 'TILBURG-001', 'HELMOND-001', 'EINDHOVEN-001', 'VETSBY-001'];
-                    const randomLocation = validLocations[Math.floor(Math.random() * validLocations.length)];
+                    const location = await getAvailableLocation();
                     return JSON.stringify({
                         businessUnitCode: 'WH-NEW-' + new Date().getTime(),
-                        location: randomLocation,
-                        capacity: 60
+                        location: location,
+                        capacity: 30
                     });
                 }
                 if (method === 'POST') {
-                    const validLocations = ['ZWOLLE-001', 'ZWOLLE-002', 'AMSTERDAM-001', 'AMSTERDAM-002', 'TILBURG-001', 'HELMOND-001', 'EINDHOVEN-001', 'VETSBY-001'];
-                    const randomLocation = validLocations[Math.floor(Math.random() * validLocations.length)];
+                    const location = await getAvailableLocation();
                     return JSON.stringify({
                         businessUnitCode: 'WH-TEST-' + new Date().getTime(),
-                        location: randomLocation,
-                        capacity: 50,
+                        location: location,
+                        capacity: 30,
                         stock: 0
                     });
                 }
                 if (method === 'PUT') {
-                    const validLocations = ['ZWOLLE-001', 'ZWOLLE-002', 'AMSTERDAM-001', 'AMSTERDAM-002', 'TILBURG-001', 'HELMOND-001', 'EINDHOVEN-001', 'VETSBY-001'];
-                    const randomLocation = validLocations[Math.floor(Math.random() * validLocations.length)];
+                    const location = await getAvailableLocation();
                     return JSON.stringify({
                         businessUnitCode: 'WH-TEST-' + new Date().getTime(),
-                        location: randomLocation,
-                        capacity: 50,
+                        location: location,
+                        capacity: 30,
                         stock: 0
                     });
                 }
