@@ -1144,9 +1144,11 @@
         }
 
         function getRequestBody(endpoint, method) {
-            // Sample request bodies based on endpoint
-            if (endpoint.includes('/product') && !endpoint.includes('{id}')) {
-                if (method === 'POST') {
+            // Sample request bodies based on endpoint and method
+
+            // PRODUCT endpoints
+            if (endpoint.includes('/product')) {
+                if (method === 'POST' || method === 'PUT') {
                     return JSON.stringify({
                         name: 'Sample Product ' + new Date().getTime(),
                         description: 'Sample product for testing',
@@ -1154,16 +1156,37 @@
                         stock: 50
                     });
                 }
+                if (method === 'PATCH') {
+                    return JSON.stringify({
+                        stock: 75
+                    });
+                }
             }
-            if (endpoint.includes('/store') && !endpoint.includes('{id}')) {
-                if (method === 'POST') {
+
+            // STORE endpoints
+            if (endpoint.includes('/store')) {
+                if (method === 'POST' || method === 'PUT') {
                     return JSON.stringify({
                         name: 'Sample Store ' + new Date().getTime(),
                         quantityProductsInStock: 100
                     });
                 }
+                if (method === 'PATCH') {
+                    return JSON.stringify({
+                        quantityProductsInStock: 150
+                    });
+                }
             }
-            if (endpoint.includes('/warehouse') && !endpoint.includes('{businessUnitCode}') && !endpoint.includes('/replacement')) {
+
+            // WAREHOUSE endpoints
+            if (endpoint.includes('/warehouse')) {
+                if (endpoint.includes('/replacement')) {
+                    return JSON.stringify({
+                        businessUnitCode: 'WH-NEW-' + new Date().getTime(),
+                        location: 'NEW-LOCATION-001',
+                        capacity: 600
+                    });
+                }
                 if (method === 'POST') {
                     return JSON.stringify({
                         businessUnitCode: 'WH-TEST-' + new Date().getTime(),
@@ -1172,7 +1195,17 @@
                         stock: 0
                     });
                 }
+                if (method === 'PUT') {
+                    return JSON.stringify({
+                        businessUnitCode: 'WH-TEST-' + new Date().getTime(),
+                        location: 'TEST-LOCATION-001',
+                        capacity: 500,
+                        stock: 0
+                    });
+                }
             }
+
+            // FULFILLMENT endpoints
             if (endpoint.includes('/fulfillment/associate')) {
                 return JSON.stringify({
                     warehouseCode: 'WH-AMSTERDAM-001',
