@@ -784,42 +784,23 @@
 
                 <div class="endpoint-card">
                     <div>
-                        <span class="method-badge method-put">PUT</span>
-                        <span class="endpoint-path">/warehouse/{businessUnitCode}/replacement</span>
+                        <span class="method-badge method-delete">DELETE</span>
+                        <span class="endpoint-path">/warehouse/{businessUnitCode}</span>
                     </div>
-                    <div class="endpoint-description">Replace/archive a warehouse with a new one</div>
+                    <div class="endpoint-description">Archive a warehouse (soft delete)</div>
 
                     <div class="params-section">
                         <div class="section-title"><i class="fas fa-cogs"></i> Path Parameters</div>
                         <div class="params-list">
-                            <div class="param-item"><span class="param-name">businessUnitCode</span> <span class="param-type">(string, required)</span> - Old warehouse code</div>
-                        </div>
-                    </div>
-
-                    <div class="params-section">
-                        <div class="section-title"><i class="fas fa-book"></i> Request Body</div>
-                        <div class="json-block">
-{
-  "businessUnitCode": "WH-ROTTERDAM-002",
-  "location": "ROTTERDAM-002",
-  "capacity": 900
-}
+                            <div class="param-item"><span class="param-name">businessUnitCode</span> <span class="param-type">(string, required)</span> - Warehouse business unit code</div>
                         </div>
                     </div>
 
                     <div class="response-section">
-                        <div class="section-title"><i class="fas fa-arrow-right"></i> Response (200 OK)</div>
-                        <div class="json-block">
-{
-  "id": "wh-003",
-  "businessUnitCode": "WH-ROTTERDAM-002",
-  "location": "ROTTERDAM-002",
-  "capacity": 900,
-  "stock": 0
-}
-                        </div>
+                        <div class="section-title"><i class="fas fa-arrow-right"></i> Response (204 No Content)</div>
+                        <div class="json-block">Empty response body (warehouse archived successfully)</div>
                     </div>
-                    <button class="try-it-btn" onclick="testAPI('PUT', '/warehouse/{businessUnitCode}/replacement')">Try It</button>
+                    <button class="try-it-btn" onclick="testAPI('DELETE', '/warehouse/{businessUnitCode}')">Try It</button>
                 </div>
             </div>
 
@@ -1276,24 +1257,7 @@
 
             // WAREHOUSE endpoints
             if (endpoint.includes('/warehouse')) {
-                if (endpoint.includes('/replacement')) {
-                    const location = await getAvailableLocation();
-                    return JSON.stringify({
-                        businessUnitCode: 'WH-NEW-' + new Date().getTime(),
-                        location: location,
-                        capacity: 30
-                    });
-                }
                 if (method === 'POST') {
-                    const location = await getAvailableLocation();
-                    return JSON.stringify({
-                        businessUnitCode: 'WH-TEST-' + new Date().getTime(),
-                        location: location,
-                        capacity: 30,
-                        stock: 0
-                    });
-                }
-                if (method === 'PUT') {
                     const location = await getAvailableLocation();
                     return JSON.stringify({
                         businessUnitCode: 'WH-TEST-' + new Date().getTime(),
