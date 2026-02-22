@@ -1010,82 +1010,21 @@
                         <div class="json-block">
 {
   "status": "UP",
+  "timestamp": "2026-02-22T10:30:00Z",
   "checks": [
     {
       "name": "Database",
-      "status": "UP",
-      "details": "PostgreSQL database connection active"
-    },
-    {
-      "name": "Disk Space",
-      "status": "UP",
-      "details": "Sufficient disk space available"
+      "status": "UP"
     },
     {
       "name": "Memory",
-      "status": "UP",
-      "details": "Memory usage within normal range"
+      "status": "UP"
     }
-  ],
-  "timestamp": "2026-02-22T10:30:00Z"
+  ]
 }
                         </div>
                     </div>
                     <button class="try-it-btn" onclick="testAPI('GET', '/monitoring/health')">Try It</button>
-                </div>
-
-                <div class="endpoint-card">
-                    <div>
-                        <span class="method-badge method-get">GET</span>
-                        <span class="endpoint-path">/q/health</span>
-                    </div>
-                    <div class="endpoint-description">Get Quarkus health status (simplified)</div>
-
-                    <div class="response-section">
-                        <div class="section-title"><i class="fas fa-arrow-right"></i> Response (200 OK)</div>
-                        <div class="json-block">
-{
-  "status": "UP"
-}
-                        </div>
-                    </div>
-                    <button class="try-it-btn" onclick="testAPI('GET', '/q/health')">Try It</button>
-                </div>
-
-                <div class="endpoint-card">
-                    <div>
-                        <span class="method-badge method-get">GET</span>
-                        <span class="endpoint-path">/q/health/live</span>
-                    </div>
-                    <div class="endpoint-description">Get application liveness probe (is app alive?)</div>
-
-                    <div class="response-section">
-                        <div class="section-title"><i class="fas fa-arrow-right"></i> Response (200 OK)</div>
-                        <div class="json-block">
-{
-  "status": "UP"
-}
-                        </div>
-                    </div>
-                    <button class="try-it-btn" onclick="testAPI('GET', '/q/health/live')">Try It</button>
-                </div>
-
-                <div class="endpoint-card">
-                    <div>
-                        <span class="method-badge method-get">GET</span>
-                        <span class="endpoint-path">/q/health/ready</span>
-                    </div>
-                    <div class="endpoint-description">Get application readiness probe (is app ready for traffic?)</div>
-
-                    <div class="response-section">
-                        <div class="section-title"><i class="fas fa-arrow-right"></i> Response (200 OK)</div>
-                        <div class="json-block">
-{
-  "status": "UP"
-}
-                        </div>
-                    </div>
-                    <button class="try-it-btn" onclick="testAPI('GET', '/q/health/ready')">Try It</button>
                 </div>
             </div>
         </div>
