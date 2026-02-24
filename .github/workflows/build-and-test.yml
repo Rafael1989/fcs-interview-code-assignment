@@ -43,36 +43,90 @@ jobs:
         echo "==============================================="
         echo "    JaCoCo Code Coverage Report Summary"
         echo "==============================================="
-        if [ -f ./java-assignment/target/site/jacoco/jacoco.csv ]; then
+        if [ -f ./java-assignment/target/site/jacoco/index.html ]; then
           echo ""
-          echo "Coverage Metrics from JaCoCo Report:"
+          echo "✅ JaCoCo Report Generated Successfully"
           echo ""
-          # Read and display the CSV header and first data row
-          head -2 ./java-assignment/target/site/jacoco/jacoco.csv | tail -1
+          echo "📊 Coverage Metrics:"
+          echo ""
+          
+          # Parse and display coverage from jacoco.csv if available
+          if [ -f ./java-assignment/target/site/jacoco/jacoco.csv ]; then
+            # Extract coverage data from CSV
+            COVERAGE_LINE=$(grep -v "^GROUP,PACKAGE,CLASS" ./java-assignment/target/site/jacoco/jacoco.csv | head -1)
+            
+            # Parse instruction coverage
+            INST_MISSED=$(echo "$COVERAGE_LINE" | cut -d',' -f4)
+            INST_COVERED=$(echo "$COVERAGE_LINE" | cut -d',' -f5)
+            INST_TOTAL=$((INST_MISSED + INST_COVERED))
+            if [ $INST_TOTAL -gt 0 ]; then
+              INST_PERCENT=$(awk "BEGIN {printf \"%.2f\", ($INST_COVERED/$INST_TOTAL)*100}")
+              echo "   Instruction Coverage: $INST_PERCENT% ($INST_COVERED/$INST_TOTAL)"
+            fi
+            
+            # Parse branch coverage
+            BRANCH_MISSED=$(echo "$COVERAGE_LINE" | cut -d',' -f6)
+            BRANCH_COVERED=$(echo "$COVERAGE_LINE" | cut -d',' -f7)
+            BRANCH_TOTAL=$((BRANCH_MISSED + BRANCH_COVERED))
+            if [ $BRANCH_TOTAL -gt 0 ]; then
+              BRANCH_PERCENT=$(awk "BEGIN {printf \"%.2f\", ($BRANCH_COVERED/$BRANCH_TOTAL)*100}")
+              echo "   Branch Coverage: $BRANCH_PERCENT% ($BRANCH_COVERED/$BRANCH_TOTAL)"
+            fi
+            
+            # Parse line coverage
+            LINE_MISSED=$(echo "$COVERAGE_LINE" | cut -d',' -f8)
+            LINE_COVERED=$(echo "$COVERAGE_LINE" | cut -d',' -f9)
+            LINE_TOTAL=$((LINE_MISSED + LINE_COVERED))
+            if [ $LINE_TOTAL -gt 0 ]; then
+              LINE_PERCENT=$(awk "BEGIN {printf \"%.2f\", ($LINE_COVERED/$LINE_TOTAL)*100}")
+              echo "   Line Coverage: $LINE_PERCENT% ($LINE_COVERED/$LINE_TOTAL)"
+            fi
+            
+            # Parse method coverage
+            METHOD_MISSED=$(echo "$COVERAGE_LINE" | cut -d',' -f10)
+            METHOD_COVERED=$(echo "$COVERAGE_LINE" | cut -d',' -f11)
+            METHOD_TOTAL=$((METHOD_MISSED + METHOD_COVERED))
+            if [ $METHOD_TOTAL -gt 0 ]; then
+              METHOD_PERCENT=$(awk "BEGIN {printf \"%.2f\", ($METHOD_COVERED/$METHOD_TOTAL)*100}")
+              echo "   Method Coverage: $METHOD_PERCENT% ($METHOD_COVERED/$METHOD_TOTAL)"
+            fi
+            
+            # Parse class coverage
+            CLASS_MISSED=$(echo "$COVERAGE_LINE" | cut -d',' -f12)
+            CLASS_COVERED=$(echo "$COVERAGE_LINE" | cut -d',' -f13)
+            CLASS_TOTAL=$((CLASS_MISSED + CLASS_COVERED))
+            if [ $CLASS_TOTAL -gt 0 ]; then
+              CLASS_PERCENT=$(awk "BEGIN {printf \"%.2f\", ($CLASS_COVERED/$CLASS_TOTAL)*100}")
+              echo "   Class Coverage: $CLASS_PERCENT% ($CLASS_COVERED/$CLASS_TOTAL)"
+            fi
+          fi
+          
           echo ""
           echo "==============================================="
           echo "✅ Coverage Status: PASSED (80%+ requirement met)"
-          echo "Total Classes Analyzed: 26"
           echo "==============================================="
           echo ""
-          echo "📊 View Detailed Metrics At:"
-          echo "   1. GitHub Artifacts (if enabled)"
+          echo "📄 View Full Report:"
+          echo "   1. Download artifact 'jacoco-coverage-report' from this workflow run"
           echo "   2. Codecov Dashboard:"
-          echo "      https://codecov.io/gh/Rafael1989/fcs-interview-code-assignment"
-          echo "   3. Local HTML Report:"
-          echo "      java-assignment/target/site/jacoco/index.html"
+          echo "      https://codecov.io/gh/${{ github.repository }}"
+          echo "   3. Local: java-assignment/target/site/jacoco/index.html"
           echo ""
-          echo "📈 Expected Coverage Ranges:"
-          echo "   - Overall:  85%+ ✅"
-          echo "   - Classes:  ~90%+ ✅"
-          echo "   - Methods:  ~85%+ ✅"
-          echo "   - Lines:    ~85%+ ✅"
           echo "==============================================="
         else
-          echo "⚠️ JaCoCo report file not found at:"
-          echo "   java-assignment/target/site/jacoco/jacoco.csv"
+          echo "⚠️ JaCoCo report not found at:"
+          echo "   java-assignment/target/site/jacoco/index.html"
+          exit 1
         fi
-      continue-on-error: true
+      continue-on-error: false
+
+    - name: Upload JaCoCo Coverage Report as Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: jacoco-coverage-report
+        path: ./java-assignment/target/site/jacoco/
+        retention-days: 30
+      if: always()
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4

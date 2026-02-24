@@ -1,5 +1,6 @@
 package com.fulfilment.application.monolith.warehouses.adapters.restapi;
 
+import com.fulfilment.application.monolith.common.validation.RequestValidator;
 import com.fulfilment.application.monolith.warehouses.adapters.database.WarehouseRepository;
 import com.fulfilment.application.monolith.warehouses.domain.usecases.ArchiveWarehouseUseCase;
 import com.fulfilment.application.monolith.warehouses.domain.usecases.CreateWarehouseUseCase;
@@ -19,6 +20,7 @@ public class WarehouseResourceImpl implements WarehouseResource {
   @Inject private CreateWarehouseUseCase createWarehouseUseCase;
   @Inject private ArchiveWarehouseUseCase archiveWarehouseUseCase;
   @Inject private ReplaceWarehouseUseCase replaceWarehouseUseCase;
+  @Inject private RequestValidator validator;
 
   // Public constructor for JaCoCo coverage
   public WarehouseResourceImpl() {}
@@ -40,6 +42,10 @@ public class WarehouseResourceImpl implements WarehouseResource {
     this.replaceWarehouseUseCase = replaceWarehouseUseCase;
   }
 
+  public void setValidator(RequestValidator validator) {
+    this.validator = validator;
+  }
+
   @Override
   public List<Warehouse> listAllWarehousesUnits() {
     return warehouseRepository.getAll().stream().map(this::toWarehouseResponse).toList();
@@ -58,20 +64,24 @@ public class WarehouseResourceImpl implements WarehouseResource {
 
   @Override
   public Warehouse getAWarehouseUnitByID(String id) {
-    var warehouse = warehouseRepository.findByBusinessUnitCode(id);
-    if (warehouse == null) {
+    Long warehouseId = validator.validateAndParseLongId(id, "Warehouse");
+
+    var dbWarehouse = warehouseRepository.findById(warehouseId);
+    if (dbWarehouse == null) {
       throw new WebApplicationException("Warehouse with id " + id + " does not exist.", 404);
     }
-    return toWarehouseResponse(warehouse);
+    return toWarehouseResponse(dbWarehouse.toWarehouse());
   }
 
   @Override
   public void archiveAWarehouseUnitByID(String id) {
-    var warehouse = warehouseRepository.findByBusinessUnitCode(id);
-    if (warehouse == null) {
+    Long warehouseId = validator.validateAndParseLongId(id, "Warehouse");
+
+    var dbWarehouse = warehouseRepository.findById(warehouseId);
+    if (dbWarehouse == null) {
       throw new WebApplicationException("Warehouse with id " + id + " does not exist.", 404);
     }
-    archiveWarehouseUseCase.archive(warehouse);
+    archiveWarehouseUseCase.archive(dbWarehouse.toWarehouse());
   }
 
   @Override

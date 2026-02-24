@@ -3,6 +3,8 @@ package com.fulfilment.application.monolith.warehouses.adapters;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.fulfilment.application.monolith.common.validation.RequestValidator;
+import com.fulfilment.application.monolith.warehouses.adapters.database.DbWarehouse;
 import com.fulfilment.application.monolith.warehouses.adapters.database.WarehouseRepository;
 import com.fulfilment.application.monolith.warehouses.adapters.restapi.WarehouseErrorMapper;
 import com.fulfilment.application.monolith.warehouses.adapters.restapi.WarehouseResourceImpl;
@@ -26,6 +28,7 @@ public class WarehouseResourceImplTest {
   @Mock private CreateWarehouseUseCase createWarehouseUseCase;
   @Mock private ArchiveWarehouseUseCase archiveWarehouseUseCase;
   @Mock private ReplaceWarehouseUseCase replaceWarehouseUseCase;
+  @Mock private RequestValidator validator;
 
   private WarehouseResourceImpl resource;
 
@@ -36,6 +39,7 @@ public class WarehouseResourceImplTest {
     resource.setCreateWarehouseUseCase(createWarehouseUseCase);
     resource.setArchiveWarehouseUseCase(archiveWarehouseUseCase);
     resource.setReplaceWarehouseUseCase(replaceWarehouseUseCase);
+    resource.setValidator(validator);
   }
 
   @Test
@@ -142,16 +146,18 @@ public class WarehouseResourceImplTest {
   @Test
   void testGetAWarehouseUnitByID() {
     // Given
-    Warehouse warehouse = new Warehouse();
-    warehouse.businessUnitCode = "WH-001";
-    warehouse.location = "AMSTERDAM-001";
-    warehouse.capacity = 100;
-    warehouse.stock = 50;
+    DbWarehouse dbWarehouse = new DbWarehouse();
+    dbWarehouse.id = 1L;
+    dbWarehouse.businessUnitCode = "WH-001";
+    dbWarehouse.location = "AMSTERDAM-001";
+    dbWarehouse.capacity = 100;
+    dbWarehouse.stock = 50;
 
-    when(warehouseRepository.findByBusinessUnitCode("WH-001")).thenReturn(warehouse);
+    when(validator.validateAndParseLongId("1", "Warehouse")).thenReturn(1L);
+    when(warehouseRepository.findById(1L)).thenReturn(dbWarehouse);
 
     // When
-    com.warehouse.api.beans.Warehouse result = resource.getAWarehouseUnitByID("WH-001");
+    com.warehouse.api.beans.Warehouse result = resource.getAWarehouseUnitByID("1");
 
     // Then
     assertNotNull(result);
@@ -164,48 +170,53 @@ public class WarehouseResourceImplTest {
   @Test
   void testGetAWarehouseUnitByIDNotFound() {
     // Given
-    when(warehouseRepository.findByBusinessUnitCode("INVALID")).thenReturn(null);
+    when(validator.validateAndParseLongId("999", "Warehouse")).thenReturn(999L);
+    when(warehouseRepository.findById(999L)).thenReturn(null);
 
     // When & Then
     jakarta.ws.rs.WebApplicationException ex =
         assertThrows(
             jakarta.ws.rs.WebApplicationException.class,
-            () -> resource.getAWarehouseUnitByID("INVALID"));
+            () -> resource.getAWarehouseUnitByID("999"));
     assertEquals(404, ex.getResponse().getStatus());
   }
 
   @Test
   void testArchiveAWarehouseUnitByID() {
     // Given
-    Warehouse warehouse = new Warehouse();
-    warehouse.businessUnitCode = "WH-001";
-    warehouse.location = "AMSTERDAM-001";
-    warehouse.capacity = 100;
-    warehouse.stock = 50;
+    DbWarehouse dbWarehouse = new DbWarehouse();
+    dbWarehouse.id = 1L;
+    dbWarehouse.businessUnitCode = "WH-001";
+    dbWarehouse.location = "AMSTERDAM-001";
+    dbWarehouse.capacity = 100;
+    dbWarehouse.stock = 50;
 
-    when(warehouseRepository.findByBusinessUnitCode("WH-001")).thenReturn(warehouse);
+    when(validator.validateAndParseLongId("1", "Warehouse")).thenReturn(1L);
+    when(warehouseRepository.findById(1L)).thenReturn(dbWarehouse);
     doNothing().when(archiveWarehouseUseCase).archive(any());
 
     // When
-    resource.archiveAWarehouseUnitByID("WH-001");
+    resource.archiveAWarehouseUnitByID("1");
 
     // Then
-    verify(warehouseRepository).findByBusinessUnitCode("WH-001");
-    verify(archiveWarehouseUseCase).archive(warehouse);
+    verify(warehouseRepository).findById(1L);
+    verify(archiveWarehouseUseCase).archive(any(Warehouse.class));
   }
 
   @Test
   void testArchiveAWarehouseUnitByIDNotFound() {
     // Given
-    when(warehouseRepository.findByBusinessUnitCode("INVALID")).thenReturn(null);
+    when(validator.validateAndParseLongId("999", "Warehouse")).thenReturn(999L);
+    when(warehouseRepository.findById(999L)).thenReturn(null);
 
     // When & Then
     jakarta.ws.rs.WebApplicationException ex =
         assertThrows(
             jakarta.ws.rs.WebApplicationException.class,
-            () -> resource.archiveAWarehouseUnitByID("INVALID"));
+            () -> resource.archiveAWarehouseUnitByID("999"));
     assertEquals(404, ex.getResponse().getStatus());
   }
+
 
   @Test
   void testReplaceTheCurrentActiveWarehouse() {
