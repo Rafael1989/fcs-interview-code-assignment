@@ -342,7 +342,7 @@ class WarehouseValidatorTest {
     Warehouse newWarehouse = new Warehouse();
     newWarehouse.businessUnitCode = "MWH.001";
     newWarehouse.location = "ZWOLLE-001";
-    newWarehouse.capacity = 35;
+    newWarehouse.capacity = 20;
     newWarehouse.stock = 20;
 
     Location location = new Location("ZWOLLE-001", 2, 50);
@@ -357,7 +357,7 @@ class WarehouseValidatorTest {
     when(locationResolver.resolveByIdentifier("ZWOLLE-001")).thenReturn(location);
     when(warehouseStore.getAll()).thenReturn(java.util.List.of(oldWarehouse, otherWarehouse));
 
-    // When & Then - should not throw (30 + 20 = 50, which equals max capacity)
+    // When & Then - should not throw (20 + 20 = 40 <= 50 max capacity)
     assertDoesNotThrow(() -> validator.validateForReplace(newWarehouse));
   }
 

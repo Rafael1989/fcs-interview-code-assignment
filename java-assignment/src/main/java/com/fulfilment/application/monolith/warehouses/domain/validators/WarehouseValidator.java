@@ -14,9 +14,9 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 public class WarehouseValidator {
 
-  @Inject private WarehouseStore warehouseStore;
+  @Inject protected WarehouseStore warehouseStore;
 
-  @Inject private LocationResolver locationResolver;
+  @Inject protected LocationResolver locationResolver;
 
   /**
    * Validates all constraints for creating a warehouse.
@@ -48,7 +48,7 @@ public class WarehouseValidator {
     // Run all create validations for the new warehouse
     validateLocationExists(newWarehouse.location);
     validateCapacityAndStock(newWarehouse);
-    validateCapacityAgainstLocationMaxCapacity(newWarehouse);
+    validateCapacityAgainstLocationMaxCapacityForReplace(newWarehouse, existingWarehouse);
 
     // Additional validations specific to replacement
     validateCapacityAccommodatesExistingStock(newWarehouse, existingWarehouse);
@@ -146,6 +146,33 @@ public class WarehouseValidator {
     var totalCapacityAtLocation =
         warehouseStore.getAll().stream()
             .filter(w -> w.location.equals(newWarehouse.location) && w.archivedAt == null)
+            .mapToInt(w -> w.capacity)
+            .sum();
+
+    if (totalCapacityAtLocation + newWarehouse.capacity > location.maxCapacity) {
+      throw new IllegalArgumentException(
+          "Warehouse capacity would exceed maximum capacity for location: " + newWarehouse.location);
+    }
+  }
+
+  /**
+   * Validates that warehouse capacity doesn't exceed location's max capacity during replacement.
+   * Excludes the existing warehouse from the total capacity calculation.
+   *
+   * @param newWarehouse the new warehouse to validate
+   * @param existingWarehouse the warehouse being replaced
+   * @throws IllegalArgumentException if capacity would exceed location's max capacity
+   */
+  private void validateCapacityAgainstLocationMaxCapacityForReplace(
+      Warehouse newWarehouse, Warehouse existingWarehouse) {
+    var location = locationResolver.resolveByIdentifier(newWarehouse.location);
+
+    // Calculate total capacity excluding the warehouse being replaced
+    var totalCapacityAtLocation =
+        warehouseStore.getAll().stream()
+            .filter(w -> w.location.equals(newWarehouse.location)
+                && w.archivedAt == null
+                && !w.businessUnitCode.equals(existingWarehouse.businessUnitCode))
             .mapToInt(w -> w.capacity)
             .sum();
 
