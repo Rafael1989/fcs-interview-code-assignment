@@ -33,4 +33,3 @@ public class CreateWarehouseUseCase implements CreateWarehouseOperation {
     warehouseStore.create(warehouse);
   }
 }
-}
