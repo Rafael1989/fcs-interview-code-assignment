@@ -1,0 +1,84 @@
+Subject: RE: Review Comments - ReplaceWarehouseUseCase Validations FIXED
+
+Dear Hari,
+
+Thank you for the review feedback on the ReplaceWarehouseUseCase validations. I have successfully implemented all the requested improvements.
+
+IMPLEMENTATION SUMMARY:
+
+✅ 1. ReplaceWarehouseUseCase NOW Includes All Create Validations
+   - Business Unit Code Verification
+   - Location Validation
+   - Maximum Warehouses Per Location Check
+   - Capacity and Stock Validation
+   - Location Capacity Validation
+
+✅ 2. Additional Replace-Specific Validations
+   - Capacity Accommodation: Verifies new warehouse capacity can hold old warehouse stock
+   - Stock Matching: Ensures new warehouse stock matches old warehouse stock
+
+✅ 3. Created New WarehouseValidator Class
+   - Centralized all warehouse validation logic in:
+     com.fulfilment.application.monolith.warehouses.domain.validators.WarehouseValidator
+   - Method: validateForCreate(Warehouse) - for creation validations
+   - Method: validateForReplace(Warehouse) - for replacement validations
+   - 8 private helper methods for specific validations
+
+✅ 4. Updated Use Cases
+   - ReplaceWarehouseUseCase: Now uses validator.validateForReplace()
+   - CreateWarehouseUseCase: Refactored to use validator.validateForCreate()
+   - Removed 60+ lines of inline validation code
+   - Improved code clarity and maintainability
+
+✅ 5. Updated Unit Tests
+   - ReplaceWarehouseUseCaseTest: Updated to mock validator
+   - CreateWarehouseUseCaseTest: Refactored with validator mocking
+   - WarehouseValidatorTest: NEW comprehensive test suite with 13 test cases
+
+VALIDATION FLOW:
+
+Create Flow:
+ReplaceWarehouseUseCase.create()
+  → WarehouseValidator.validateForCreate()
+    ✓ Business Unit Code Check
+    ✓ Location Validation
+    ✓ Max Warehouses Check
+    ✓ Capacity & Stock Check
+    ✓ Location Capacity Check
+  → Persist Warehouse
+
+Replace Flow:
+ReplaceWarehouseUseCase.replace()
+  → WarehouseValidator.validateForReplace()
+    ✓ Warehouse Exists Check
+    ✓ Location Validation
+    ✓ Capacity & Stock Check
+    ✓ Location Capacity Check
+    ✓ Capacity Accommodation Check (NEW)
+    ✓ Stock Matching Check (NEW)
+  → Archive Old Warehouse
+  → Create New Warehouse
+
+FILES CREATED:
+- WarehouseValidator.java (validator class with 8 validation methods)
+- WarehouseValidatorTest.java (comprehensive test suite, 13 test cases)
+- WAREHOUSE_VALIDATOR_IMPLEMENTATION.md (detailed documentation)
+
+FILES MODIFIED:
+- ReplaceWarehouseUseCase.java
+- CreateWarehouseUseCase.java
+- ReplaceWarehouseUseCaseTest.java
+- CreateWarehouseUseCaseTest.java
+
+CODE QUALITY BENEFITS:
+✓ Separation of Concerns: Validation logic isolated from business logic
+✓ DRY Principle: Reusable validation methods across use cases
+✓ Enhanced Testability: Validator can be tested independently
+✓ Improved Maintainability: Single source of truth for validation rules
+✓ Better Code Organization: Validation logic in dedicated validator class
+
+All changes have been committed to the repository and are ready for deployment.
+
+Best regards,
+[Your Name]
+

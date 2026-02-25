@@ -3,10 +3,9 @@ package com.fulfilment.application.monolith.warehouses.domain.usecases;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.fulfilment.application.monolith.location.LocationGateway;
-import com.fulfilment.application.monolith.warehouses.domain.models.Location;
 import com.fulfilment.application.monolith.warehouses.domain.models.Warehouse;
 import com.fulfilment.application.monolith.warehouses.domain.ports.WarehouseStore;
+import com.fulfilment.application.monolith.warehouses.domain.validators.WarehouseValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,14 +16,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 public class CreateWarehouseUseCaseTest {
 
   @Mock private WarehouseStore warehouseStore;
-  @Mock private LocationGateway locationGateway;
+  @Mock private WarehouseValidator validator;
 
   private CreateWarehouseUseCase useCase;
 
   @BeforeEach
   void setup() {
     useCase = new CreateWarehouseUseCase(warehouseStore);
-    useCase.setLocationResolver(locationGateway);
+    useCase.setValidator(validator);
   }
 
   @Test
@@ -36,18 +35,14 @@ public class CreateWarehouseUseCaseTest {
     warehouse.capacity = 50;
     warehouse.stock = 10;
 
-    Location location = new Location("AMSTERDAM-001", 5, 100);
-
-    when(locationGateway.resolveByIdentifier("AMSTERDAM-001")).thenReturn(location);
-    when(warehouseStore.findByBusinessUnitCode("NEW-001"))
-        .thenThrow(new IllegalArgumentException("Warehouse not found: NEW-001"));
-    when(warehouseStore.getAll()).thenReturn(java.util.List.of());
+    doNothing().when(validator).validateForCreate(any());
     doNothing().when(warehouseStore).create(any());
 
     // When
     useCase.create(warehouse);
 
     // Then
+    verify(validator).validateForCreate(warehouse);
     verify(warehouseStore).create(warehouse);
     assertNotNull(warehouse.createdAt);
   }
@@ -61,8 +56,8 @@ public class CreateWarehouseUseCaseTest {
     warehouse.capacity = 50;
     warehouse.stock = 10;
 
-    when(locationGateway.resolveByIdentifier("INVALID-LOCATION"))
-        .thenThrow(new IllegalArgumentException("Location not found"));
+    doThrow(new IllegalArgumentException("Location not found"))
+        .when(validator).validateForCreate(any());
 
     // When & Then
     assertThrows(
@@ -80,15 +75,9 @@ public class CreateWarehouseUseCaseTest {
     warehouse.capacity = 50;
     warehouse.stock = 10;
 
-    Location location = new Location("AMSTERDAM-001", 5, 100);
-
-    Warehouse existingWarehouse = new Warehouse();
-    existingWarehouse.businessUnitCode = "EXISTING-001";
-    existingWarehouse.archivedAt = null;
-
-    when(locationGateway.resolveByIdentifier("AMSTERDAM-001")).thenReturn(location);
-    when(warehouseStore.findByBusinessUnitCode("EXISTING-001"))
-        .thenReturn(existingWarehouse);
+    doThrow(new IllegalArgumentException(
+        "Business Unit Code already exists: EXISTING-001"))
+        .when(validator).validateForCreate(any());
 
     // When & Then
     assertThrows(
@@ -106,18 +95,9 @@ public class CreateWarehouseUseCaseTest {
     warehouse.capacity = 30;
     warehouse.stock = 10;
 
-    Location location = new Location("ZWOLLE-001", 1, 40);
-
-    Warehouse existing = new Warehouse();
-    existing.businessUnitCode = "EXISTING-001";
-    existing.location = "ZWOLLE-001";
-    existing.capacity = 30;
-    existing.archivedAt = null;
-
-    when(locationGateway.resolveByIdentifier("ZWOLLE-001")).thenReturn(location);
-    when(warehouseStore.findByBusinessUnitCode("NEW-001"))
-        .thenThrow(new IllegalArgumentException("Warehouse not found: NEW-001"));
-    when(warehouseStore.getAll()).thenReturn(java.util.List.of(existing));
+    doThrow(new IllegalArgumentException(
+        "Maximum number of warehouses reached for location: ZWOLLE-001"))
+        .when(validator).validateForCreate(any());
 
     // When & Then
     assertThrows(
@@ -135,11 +115,9 @@ public class CreateWarehouseUseCaseTest {
     warehouse.capacity = 50;
     warehouse.stock = 60; // Stock > Capacity
 
-    Location location = new Location("AMSTERDAM-001", 5, 100);
-
-    when(locationGateway.resolveByIdentifier("AMSTERDAM-001")).thenReturn(location);
-    when(warehouseStore.findByBusinessUnitCode("NEW-001"))
-        .thenThrow(new IllegalArgumentException("Warehouse not found: NEW-001"));
+    doThrow(new IllegalArgumentException(
+        "Stock cannot exceed warehouse capacity"))
+        .when(validator).validateForCreate(any());
 
     // When & Then
     assertThrows(
@@ -157,18 +135,9 @@ public class CreateWarehouseUseCaseTest {
     warehouse.capacity = 30;
     warehouse.stock = 20;
 
-    Location location = new Location("ZWOLLE-001", 2, 40); // Max capacity 40
-
-    Warehouse existing = new Warehouse();
-    existing.businessUnitCode = "EXISTING-001";
-    existing.location = "ZWOLLE-001";
-    existing.capacity = 35;
-    existing.archivedAt = null;
-
-    when(locationGateway.resolveByIdentifier("ZWOLLE-001")).thenReturn(location);
-    when(warehouseStore.findByBusinessUnitCode("NEW-001"))
-        .thenThrow(new IllegalArgumentException("Warehouse not found: NEW-001"));
-    when(warehouseStore.getAll()).thenReturn(java.util.List.of(existing));
+    doThrow(new IllegalArgumentException(
+        "Warehouse capacity would exceed maximum capacity for location: ZWOLLE-001"))
+        .when(validator).validateForCreate(any());
 
     // When & Then
     assertThrows(
